@@ -3,7 +3,6 @@ import {
   Toolbar,
   Typography,
   Button,
-  Grid
 } from "@mui/material"; // Removed extra space
 import { useNavigate } from "react-router-dom"; // Updated useHistory to useNavigate
 import { styled } from '@mui/system'; // Import styled for MUI v5
@@ -35,7 +34,12 @@ const Navbar = () => {
           CIVEX
         </Typography>
         {isAuth() ? (
-          userType() === "recruiter" ? (
+          userType() === "admin" ? (
+            // Show only the Logout button for admin users
+            <StyledButton color="inherit" onClick={() => handleClick("/logout")}>
+              Logout
+            </StyledButton>
+          ) :userType() === "recruiter" ? (
             <>
               <StyledButton color="inherit" onClick={() => handleClick("/home")}>
                 ALL JOBS

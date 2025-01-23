@@ -11,6 +11,9 @@ const apiList = {
   rating: `${server}/api/rating`,
   user: `${server}/api/user`,
   applicants: `${server}/api/applicants`,
+  recruiters:`${server}/admin/recruiterinfos`,
+  approveRecruiter:(id) => `${server}/admin/recruiterinfos/${id}`,
+  deleteRecruiter:(id) => `${server}/admin/recruiterinfos/${id}`,
 
 };
 

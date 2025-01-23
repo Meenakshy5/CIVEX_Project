@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid2 } from "@mui/material";
 import React, { createContext, useState , useEffect} from "react";
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -43,11 +43,11 @@ function App() {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <SetPopupContext.Provider value={setPopup}>
-          <Grid container direction="column">
-            <Grid item xs>
+          <Grid2 container direction="column">
+            <Grid2 item xs>
               <Navbar />
-            </Grid>
-            <Grid
+            </Grid2>
+            <Grid2
               item
               sx={{
                 display: "flex",
@@ -81,8 +81,8 @@ function App() {
                 <Route path="/admin-dashboard" element={<AdminDashboard />}/>
                 <Route path="*" element={<ErrorPage />} />
               </Routes>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
           <MessagePopup
             open={popup.open}
             setOpen={(status) =>

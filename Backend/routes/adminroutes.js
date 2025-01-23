@@ -1,24 +1,57 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const Admin = require("../db/Admin");
+const jwtAuth = require("../lib/jwtAuth");
+
+const RecruiterInfo = require("../db/Recruiter");
 
 const router = express.Router();
 
-// Admin Registration (for adding admin manually to the collection)
-router.post("/register", async (req, res) => {
-  const { name, email, password } = req.body;
+// This endpoint fetches all recruiter information from the RecruiterInfo collection.
+router.get("/recruiterinfos", async (req, res) => {
+  console.log("inside router");
+  try {
+    console.log("inside try");
+    const recruiters = await RecruiterInfo.find();
+    console.log(recruiters);
+    
+    res.json(recruiters);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch recruiters" });
+  }
+});
+
+// This endpoint updates the status of a recruiter to "approved".
+router.put("/recruiterinfos/:id", async (req, res) => {
+  const { id } = req.params;
 
   try {
-    const existingAdmin = await Admin.findOne({ email });
-    if (existingAdmin) {
-      return res.status(400).json({ message: "Admin already exists." });
+    const recruiter = await RecruiterInfo.findByIdAndUpdate(
+      id,
+      { status: "approved" },
+      { new: true }
+    );
+    if (!recruiter) {
+      return res.status(404).json({ error: "Recruiter not found" });
     }
+    res.json(recruiter);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update recruiter status" });
+  }
+});
 
-    const newAdmin = new Admin({ name, email, password });
-    await newAdmin.save();
-    res.status(201).json({ message: "Admin created successfully!" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+// This endpoint deletes a recruiter from the database based on their id.
+
+router.delete("/recruiterinfos/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const recruiter = await RecruiterInfo.findByIdAndDelete(id);
+    if (!recruiter) {
+      return res.status(404).json({ error: "Recruiter not found" });
+    }
+    res.json({ message: "Recruiter deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete recruiter" });
   }
 });
 
