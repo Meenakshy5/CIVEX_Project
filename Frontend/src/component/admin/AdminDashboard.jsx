@@ -15,6 +15,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Grid,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import PersonIcon from "@mui/icons-material/Person";
@@ -27,24 +28,36 @@ const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("Dashboard");
   const [recruiters, setRecruiters] = useState([]);
-  const adminName = localStorage.getItem("adminName") || "Admin"; // Fetch admin name from localStorage
+  const [dashboardStats, setDashboardStats] = useState({
+    totalUsers: 0,
+    totalApplicants: 0,
+    totalRecruiters: 0,
+    totalJobs: 0,
+  });
+  const adminName = localStorage.getItem("adminName") || "Admin";
   const token = localStorage.getItem("token");
 
   // Toggle sidebar
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
+  // Fetch dashboard stats
+  useEffect(() => {
+    if (activeSection === "Dashboard") {
+      axios
+        .get(apiList.dashboardStats, { headers: { Authorization: `Bearer ${token}` } })
+        .then((res) => setDashboardStats(res.data))
+        .catch((err) => console.error(err));
+    }
+  }, [activeSection, token]);
+
   // Fetch recruiters from the database
   useEffect(() => {
     if (activeSection === "Manage Recruiters") {
-      // console.log('inside manage recruiters',activeSection);
       axios
         .get(apiList.recruiters, { headers: { Authorization: `Bearer ${token}` } })
-        .then((res) => {
-          console.log(res.data); // Log the actual data
-          setRecruiters(res.data);
-        })
-        .catch((err) => console.error(err));  
-    } 
+        .then((res) => setRecruiters(res.data))
+        .catch((err) => console.error(err));
+    }
   }, [activeSection, token]);
 
   // Approve recruiter
@@ -55,11 +68,9 @@ const AdminDashboard = () => {
         setRecruiters((prev) =>
           prev.map((rec) => (rec.id === id ? { ...rec, status: "approved" } : rec))
         );
-        fetchRecruiters();
       })
       .catch((err) => console.error(err));
   };
-
 
   // Delete recruiter
   const deleteRecruiter = (id) => {
@@ -68,8 +79,7 @@ const AdminDashboard = () => {
       axios
         .delete(apiList.deleteRecruiter(id), { headers: { Authorization: `Bearer ${token}` } })
         .then(() => {
-          // After deletion, refresh the recruiters list
-          fetchRecruiters();
+          setRecruiters((prev) => prev.filter((rec) => rec.id !== id));
         })
         .catch((err) => console.error(err));
     }
@@ -79,7 +89,7 @@ const AdminDashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("adminName");
-    window.location.reload(); // Refresh the page to redirect to login
+    window.location.reload();
   };
 
   return (
@@ -88,15 +98,24 @@ const AdminDashboard = () => {
       <Drawer
         variant="persistent"
         open={isSidebarOpen}
-        sx={{ width: 240, flexShrink: 0 }}
-        anchor="left"
+        sx={{
+          width: 240,
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: 240,
+            height: `calc(100% - 64px)`,
+            marginTop: "64px",
+            boxSizing: "border-box",
+          },
+        }}
       >
         <Box
           sx={{
-            width: 240,
+            width: "100%",
             padding: 2,
             backgroundColor: "#f4f4f4",
             height: "100%",
+            overflowY: "auto",
           }}
         >
           <Box display="flex" alignItems="center" marginBottom={4}>
@@ -112,9 +131,6 @@ const AdminDashboard = () => {
             <ListItem button onClick={() => setActiveSection("Manage Recruiters")}>
               <ListItemText primary="Manage Recruiters" />
             </ListItem>
-            <ListItem button onClick={handleLogout}>
-              <ListItemText primary="Logout" />
-            </ListItem>
           </List>
         </Box>
       </Drawer>
@@ -127,6 +143,36 @@ const AdminDashboard = () => {
         <Typography variant="h4" gutterBottom>
           {activeSection}
         </Typography>
+
+        {/* Dashboard Section */}
+        {activeSection === "Dashboard" && (
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6} md={3}>
+              <Paper sx={{ p: 3, backgroundColor: "#4caf50", color: "#fff", textAlign: "center" }}>
+                <Typography variant="h6">Total Users</Typography>
+                <Typography variant="h4">{dashboardStats.totalUsers}</Typography>
+              </Paper>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <Paper sx={{ p: 3, backgroundColor: "#2196f3", color: "#fff", textAlign: "center" }}>
+                <Typography variant="h6">Total Applicants</Typography>
+                <Typography variant="h4">{dashboardStats.totalApplicants}</Typography>
+              </Paper>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <Paper sx={{ p: 3, backgroundColor: "#ff9800", color: "#fff", textAlign: "center" }}>
+                <Typography variant="h6">Total Recruiters</Typography>
+                <Typography variant="h4">{dashboardStats.totalRecruiters}</Typography>
+              </Paper>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <Paper sx={{ p: 3, backgroundColor: "#f44336", color: "#fff", textAlign: "center" }}>
+                <Typography variant="h6">Total Jobs</Typography>
+                <Typography variant="h4">{dashboardStats.totalJobs}</Typography>
+              </Paper>
+            </Grid>
+          </Grid>
+        )}
 
         {/* Manage Recruiters Section */}
         {activeSection === "Manage Recruiters" && (
@@ -142,40 +188,38 @@ const AdminDashboard = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-              {Array.isArray(recruiters) && recruiters.length > 0 ? (
-              recruiters.map((recruiter) => (
-              <TableRow key={recruiter._id}>
-              <TableCell>{recruiter.name}</TableCell>
-              <TableCell>{recruiter.contactNumber || "N/A"}</TableCell>
-              <TableCell>{recruiter.bio || "N/A"}</TableCell>
-              <TableCell>{recruiter.status}</TableCell>
-              <TableCell>
-                {console.log(recruiter)}
-            {recruiter.status === "pending" && (
-                <Button
-                startIcon={<CheckCircleIcon />}
-                color="success"
-                onClick={() => approveRecruiter(recruiter._id )}
-                >
-                Approve
-                </Button>
-            )}
-        <Button
-          startIcon={<DeleteIcon />}
-          color="error"
-          onClick={() => deleteRecruiter(recruiter._id)}
-        >
-          Delete
-        </Button>
-      </TableCell>
-    </TableRow>
-  ))
-) : (
-  <TableRow>
-    <TableCell colSpan={5}>No recruiters found.</TableCell>
-  </TableRow>
-)}
-
+                {Array.isArray(recruiters) && recruiters.length > 0 ? (
+                  recruiters.map((recruiter) => (
+                    <TableRow key={recruiter._id}>
+                      <TableCell>{recruiter.name}</TableCell>
+                      <TableCell>{recruiter.contactNumber || "N/A"}</TableCell>
+                      <TableCell>{recruiter.bio || "N/A"}</TableCell>
+                      <TableCell>{recruiter.status}</TableCell>
+                      <TableCell>
+                        {recruiter.status === "pending" && (
+                          <Button
+                            startIcon={<CheckCircleIcon />}
+                            color="success"
+                            onClick={() => approveRecruiter(recruiter._id)}
+                          >
+                            Approve
+                          </Button>
+                        )}
+                        <Button
+                          startIcon={<DeleteIcon />}
+                          color="error"
+                          onClick={() => deleteRecruiter(recruiter._id)}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5}>No recruiters found.</TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </Paper>
@@ -186,3 +230,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+

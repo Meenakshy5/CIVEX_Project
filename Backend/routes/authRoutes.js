@@ -12,6 +12,12 @@ const router = express.Router();
 
 router.post("/signup", (req, res) => {
   const data = req.body;
+
+    // Add validation to prevent undefined values
+    if (!data.email || !data.password || !data.type) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+    
   let user = new User({
     email: data.email,
     password: data.password,

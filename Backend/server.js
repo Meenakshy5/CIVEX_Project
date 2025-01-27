@@ -5,6 +5,13 @@ const passportConfig = require("./lib/passportConfig");
 const cors = require("cors");
 const fs = require("fs");
 
+
+const cloudinary = require('cloudinary').v2;
+cloudinary.config({
+  cloud_name: 'dnsn0h9rn', 
+  api_key: '694692123754412',
+  api_secret: 'l4Y5D3LXq-Y5Mof8nUucU8uBT14'
+});
 // MongoDB
 mongoose
   .connect("mongodb+srv://meenakshyjiji2004:EQhuTQpvdxFnL0c2@cluster0.tl8oe.mongodb.net/jobPortal")

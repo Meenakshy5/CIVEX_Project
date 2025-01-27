@@ -19,7 +19,7 @@ import { SetPopupContext } from "../App";
 import apiList from "../lib/apiList";
 import isAuth from "../lib/isAuth";
 
-const Login = () => {
+const Signup = () => {
   const navigate = useNavigate();
   const setPopup = useContext(SetPopupContext);
 
@@ -38,10 +38,7 @@ const Login = () => {
   });
 
   const [phone, setPhone] = useState("");
-  const [education, setEducation] = useState([
-    { institutionName: "", startYear: "", endYear: "" },
-  ]);
-
+  const [education, setEducation] = useState([ { institutionName: "", startYear: "", endYear: "" } ]);
   const [inputErrorHandler, setInputErrorHandler] = useState({
     email: { required: true, error: false, message: "" },
     password: { required: true, error: false, message: "" },
@@ -62,9 +59,7 @@ const Login = () => {
   useEffect(() => {
     setSignupDetails((prev) => ({
       ...prev,
-      education: education.filter(
-        (edu) => edu.institutionName.trim() !== "" // Avoid empty institutions
-      ),
+      education: education.filter((edu) => edu.institutionName.trim() !== ""),
     }));
   }, [education]);
 
@@ -87,7 +82,7 @@ const Login = () => {
     return isValid;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validateInputs()) {
       setPopup({
         open: true,
@@ -97,41 +92,45 @@ const Login = () => {
       return;
     }
 
-    const details = {
-      ...signupDetails,
-      contactNumber: phone ? `+${phone}` : "",
-    };
-    console.log("Sending request with data:", details);
+    const formData = new FormData();
+    formData.append('name', signupDetails.name);
+    formData.append('email', signupDetails.email);
+    formData.append('password', signupDetails.password);
+    formData.append('contactNumber', phone ? `+${phone}` : "");
+    formData.append('type', signupDetails.type);
+    formData.append('bio', signupDetails.bio || "");
+    formData.append('skills', signupDetails.skills.join(', '));
+    formData.append('education', JSON.stringify(signupDetails.education));
 
-    axios
-      .post(apiList.signup, details)
-      .then((response) => {
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("type", response.data.type);
-        setLoggedin(isAuth());
-        setPopup({
-          open: true,
-          severity: "success",
-          message: "Signup successful!",
-        });
-        navigate("/");
-      })
-      .catch((err) => {
-      // Check if the error is because the email already exists
-      if (err.response && err.response.data.message === "Email already exists") {
-        setPopup({
-          open: true,
-          severity: "error",
-          message: "This email is already registered. Please choose a different one.",
-        });
-      } else {
-        setPopup({
-          open: true,
-          severity: "error",
-          message: err.response.data.message || "Signup failed",
-        });
-      }
-    });
+    // Append files if they are present
+    if (signupDetails.resume) {
+      formData.append('resume', signupDetails.resume);
+    }
+    if (signupDetails.profile) {
+      formData.append('profile', signupDetails.profile);
+    }
+
+    try {
+      const response = await axios.post(apiList.signup, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      localStorage.setItem('token', response.data.token);
+      setLoggedin(isAuth());
+      setPopup({
+        open: true,
+        severity: "success",
+        message: "Signup successful!",
+      });
+      navigate('/');
+    } catch (err) {
+      setPopup({
+        open: true,
+        severity: "error",
+        message: err.response?.data?.message || 'Signup failed',
+      });
+    }
   };
 
   if (loggedin) {
@@ -184,7 +183,6 @@ const Login = () => {
         </Box>
         {signupDetails.type === "applicant" && (
           <>
-            {/* Multifield Input */}
             {education.map((edu, idx) => (
               <Box display="flex" gap={2} key={idx}>
                 <Box flex={1}>
@@ -241,17 +239,17 @@ const Login = () => {
               Add experience
             </Button>
             <Box>
-            <TextField
-              label="Skills"
-              value={signupDetails.skills.join(', ')} // Join skills with comma separation
-              onChange={(e) => {
-                const newSkills = e.target.value.split(',').map((skill) => skill.trim()); // Split input by commas
-                handleInput("skills", newSkills); // Update the skills in signupDetails
-              }}
-              helperText="Enter skills separated by commas (Press Enter after each skill)"
-              fullWidth
-            />
-          </Box>
+              <TextField
+                label="Skills"
+                value={signupDetails.skills.join(', ')} // Join skills with comma separation
+                onChange={(e) => {
+                  const newSkills = e.target.value.split(',').map((skill) => skill.trim()); // Split input by commas
+                  handleInput("skills", newSkills); // Update the skills in signupDetails
+                }}
+                helperText="Enter skills separated by commas (Press Enter after each skill)"
+                fullWidth
+              />
+            </Box>
 
             <Box>
               <FileUploadInput
@@ -295,4 +293,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;

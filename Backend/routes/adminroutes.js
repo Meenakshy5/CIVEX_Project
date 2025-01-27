@@ -6,6 +6,26 @@ const RecruiterInfo = require("../db/Recruiter");
 
 const router = express.Router();
 
+router.get("/dashboard/stats", async (req, res) => {
+  try {
+    const totalUsers = await mongoose.model("UserAuth").countDocuments(); // Replace "User" with your user model
+    const totalApplicants = await mongoose.model("JobApplicantInfo").countDocuments(); // Replace "Applicant" with your applicant model
+    const totalRecruiters = await mongoose.model("RecruiterInfo").countDocuments(); // Replace "RecruiterInfo" if the model name differs
+    const totalJobs = await mongoose.model("jobs").countDocuments(); // Replace "Job" with your job model
+
+    res.json({
+      totalUsers,
+      totalApplicants,
+      totalRecruiters,
+      totalJobs,
+    });
+  } catch (err) {
+    console.error("Error fetching dashboard stats:", err);
+    res.status(500).json({ error: "Failed to fetch dashboard stats" });
+  }
+});
+
+
 // This endpoint fetches all recruiter information from the RecruiterInfo collection.
 router.get("/recruiterinfos", async (req, res) => {
   console.log("inside router");
