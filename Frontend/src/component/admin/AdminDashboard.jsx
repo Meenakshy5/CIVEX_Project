@@ -22,7 +22,11 @@ import PersonIcon from "@mui/icons-material/Person";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import axios from "axios";
+import { Chart as ChartJS, BarElement, ArcElement, CategoryScale, LinearScale } from "chart.js";
+import { Bar, Pie } from "react-chartjs-2";
 import apiList from "../../lib/apiList";
+
+ChartJS.register(BarElement, ArcElement, CategoryScale, LinearScale);
 
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -66,7 +70,7 @@ const AdminDashboard = () => {
       .put(apiList.approveRecruiter(id), null, { headers: { Authorization: `Bearer ${token}` } })
       .then(() => {
         setRecruiters((prev) =>
-          prev.map((rec) => (rec.id === id ? { ...rec, status: "approved" } : rec))
+          prev.map((rec) => (rec._id === id ? { ...rec, status: "approved" } : rec))
         );
       })
       .catch((err) => console.error(err));
@@ -79,7 +83,7 @@ const AdminDashboard = () => {
       axios
         .delete(apiList.deleteRecruiter(id), { headers: { Authorization: `Bearer ${token}` } })
         .then(() => {
-          setRecruiters((prev) => prev.filter((rec) => rec.id !== id));
+          setRecruiters((prev) => prev.filter((rec) => rec._id !== id));
         })
         .catch((err) => console.error(err));
     }
@@ -92,19 +96,48 @@ const AdminDashboard = () => {
     window.location.reload();
   };
 
+  // Chart data
+  const barChartData = {
+    labels: ["Total Users", "Applicants", "Recruiters", "Jobs"],
+    datasets: [
+      {
+        label: "Statistics",
+        data: [
+          dashboardStats.totalUsers,
+          dashboardStats.totalApplicants,
+          dashboardStats.totalRecruiters,
+          dashboardStats.totalJobs,
+        ],
+        backgroundColor: ["#4caf50", "#2196f3", "#ff9800", "#f44336"],
+      },
+    ],
+  };
+
+  const pieChartData = {
+    labels: ["Users", "Applicants", "Recruiters", "Jobs"],
+    datasets: [
+      {
+        data: [
+          dashboardStats.totalUsers,
+          dashboardStats.totalApplicants,
+          dashboardStats.totalRecruiters,
+          dashboardStats.totalJobs,
+        ],
+        backgroundColor: ["#4caf50", "#2196f3", "#ff9800", "#f44336"],
+      },
+    ],
+  };
+
   return (
     <Box display="flex">
       {/* Sidebar */}
       <Drawer
-        variant="persistent"
+        variant="temporary"
         open={isSidebarOpen}
+        onClose={toggleSidebar}
         sx={{
-          width: 240,
-          flexShrink: 0,
           "& .MuiDrawer-paper": {
             width: 240,
-            height: `calc(100% - 64px)`,
-            marginTop: "64px",
             boxSizing: "border-box",
           },
         }}
@@ -136,7 +169,7 @@ const AdminDashboard = () => {
       </Drawer>
 
       {/* Main Content */}
-      <Box flexGrow={1} padding={3}>
+      <Box flexGrow={1} padding={3} marginLeft={isSidebarOpen ? 0 : 0}>
         <IconButton onClick={toggleSidebar} sx={{ marginBottom: 2 }}>
           <MenuIcon />
         </IconButton>
@@ -146,32 +179,84 @@ const AdminDashboard = () => {
 
         {/* Dashboard Section */}
         {activeSection === "Dashboard" && (
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={6} md={3}>
-              <Paper sx={{ p: 3, backgroundColor: "#4caf50", color: "#fff", textAlign: "center" }}>
-                <Typography variant="h6">Total Users</Typography>
-                <Typography variant="h4">{dashboardStats.totalUsers}</Typography>
-              </Paper>
+          <>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6} md={3}>
+                <Paper
+                  sx={{
+                    p: 3,
+                    backgroundColor: "#4caf50",
+                    color: "#fff",
+                    textAlign: "center",
+                    minHeight: 150,
+                  }}
+                >
+                  <Typography variant="h6">Total Users</Typography>
+                  <Typography variant="h4">{dashboardStats.totalUsers}</Typography>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Paper
+                  sx={{
+                    p: 3,
+                    backgroundColor: "#2196f3",
+                    color: "#fff",
+                    textAlign: "center",
+                    minHeight: 150,
+                  }}
+                >
+                  <Typography variant="h6">Total Applicants</Typography>
+                  <Typography variant="h4">{dashboardStats.totalApplicants}</Typography>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Paper
+                  sx={{
+                    p: 3,
+                    backgroundColor: "#ff9800",
+                    color: "#fff",
+                    textAlign: "center",
+                    minHeight: 150,
+                  }}
+                >
+                  <Typography variant="h6">Total Recruiters</Typography>
+                  <Typography variant="h4">{dashboardStats.totalRecruiters}</Typography>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Paper
+                  sx={{
+                    p: 3,
+                    backgroundColor: "#f44336",
+                    color: "#fff",
+                    textAlign: "center",
+                    minHeight: 150,
+                  }}
+                >
+                  <Typography variant="h6">Total Jobs</Typography>
+                  <Typography variant="h4">{dashboardStats.totalJobs}</Typography>
+                </Paper>
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Paper sx={{ p: 3, backgroundColor: "#2196f3", color: "#fff", textAlign: "center" }}>
-                <Typography variant="h6">Total Applicants</Typography>
-                <Typography variant="h4">{dashboardStats.totalApplicants}</Typography>
-              </Paper>
+            <Grid container spacing={3} marginTop={4}>
+              <Grid item xs={12} md={6}>
+                <Paper sx={{ p: 3 ,height: "70%"}}>
+                  <Typography variant="h6" gutterBottom>
+                    Bar Chart
+                  </Typography>
+                  <Bar data={barChartData}  options={{ responsive: true, maintainAspectRatio: true }} />
+                </Paper>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Paper sx={{ p: 3 }}>
+                  <Typography variant="h6" gutterBottom>
+                    Pie Chart
+                  </Typography>
+                  <Pie data={pieChartData} options={{ responsive: true, maintainAspectRatio: true }} />
+                </Paper>
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Paper sx={{ p: 3, backgroundColor: "#ff9800", color: "#fff", textAlign: "center" }}>
-                <Typography variant="h6">Total Recruiters</Typography>
-                <Typography variant="h4">{dashboardStats.totalRecruiters}</Typography>
-              </Paper>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Paper sx={{ p: 3, backgroundColor: "#f44336", color: "#fff", textAlign: "center" }}>
-                <Typography variant="h6">Total Jobs</Typography>
-                <Typography variant="h4">{dashboardStats.totalJobs}</Typography>
-              </Paper>
-            </Grid>
-          </Grid>
+          </>
         )}
 
         {/* Manage Recruiters Section */}
@@ -230,4 +315,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-
