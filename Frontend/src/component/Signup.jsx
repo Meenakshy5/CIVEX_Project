@@ -1,295 +1,406 @@
-import React, { useState, useContext, useEffect } from "react";
-import {
-  TextField,
-  Button,
-  Typography,
-  Paper,
-  MenuItem,
-  Box,  // Import Box for layout
-} from "@mui/material"; // Adjust imports for Material-UI v5
-import axios from "axios";
-import { useNavigate } from "react-router-dom"; // For react-router-dom v6
-import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/material.css";
-
-import PasswordInput from "../lib/PasswordInput";
-import EmailInput from "../lib/EmailInput";
-import FileUploadInput from "../lib/FileUploadInput";
-import { SetPopupContext } from "../App";
+import React, { useState } from 'react';
+import { TextField, Button, Box, Typography, MenuItem, IconButton } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Minus } from 'lucide-react';
+import axios from 'axios';
 import apiList from "../lib/apiList";
-import isAuth from "../lib/isAuth";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const setPopup = useContext(SetPopupContext);
-
-  const [loggedin, setLoggedin] = useState(isAuth());
-  const [signupDetails, setSignupDetails] = useState({
-    type: "applicant",
-    email: "",
-    password: "",
-    name: "",
-    education: [],
-    skills: [],  // Added skills to state
-    resume: "",
-    profile: "",
-    bio: "",
-    contactNumber: "",
+  const [formData, setFormData] = useState({
+    type: 'applicant',
+    email: '',
+    password: '',
+    name: '',
+    education: [{ institutionName: '', startYear: '', endYear: '' }],
+    skills: '',
+    bio: '',
+    contactNumber: '',
+    resume: null,
+    profile: null
+  });
+  const [error, setError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({
+    resume: false,
+    profile: false
   });
 
-  const [phone, setPhone] = useState("");
-  const [education, setEducation] = useState([ { institutionName: "", startYear: "", endYear: "" } ]);
-  const [inputErrorHandler, setInputErrorHandler] = useState({
-    email: { required: true, error: false, message: "" },
-    password: { required: true, error: false, message: "" },
-    name: { required: true, error: false, message: "" },
-  });
-
-  const handleInput = (key, value) => {
-    setSignupDetails((prev) => ({ ...prev, [key]: value }));
+  const handleInputChange = (field, value) => {
+    if (field === 'email') {
+      setEmailError('');
+    }
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleInputError = (key, status, message) => {
-    setInputErrorHandler((prev) => ({
-      ...prev,
-      [key]: { required: true, error: status, message },
-    }));
+  const handleEmailChange = (e) => {
+    const email = e.target.value;
+    handleInputChange('email', email);
+    
+    if (email && email.includes('@') && email.includes('.')) {
+      checkEmailExists(email);
+    }
   };
 
-  useEffect(() => {
-    setSignupDetails((prev) => ({
-      ...prev,
-      education: education.filter((edu) => edu.institutionName.trim() !== ""),
-    }));
-  }, [education]);
-
-  const validateInputs = () => {
-    const updatedErrorHandler = { ...inputErrorHandler };
-    let isValid = true;
-
-    Object.keys(inputErrorHandler).forEach((key) => {
-      if (!signupDetails[key]) {
-        updatedErrorHandler[key] = {
-          required: true,
-          error: true,
-          message: `${key.charAt(0).toUpperCase() + key.slice(1)} is required`,
-        };
-        isValid = false;
-      }
-    });
-
-    setInputErrorHandler(updatedErrorHandler);
-    return isValid;
-  };
-
-  const handleSubmit = async () => {
-    if (!validateInputs()) {
-      setPopup({
-        open: true,
-        severity: "error",
-        message: "Please fill all required fields",
-      });
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('name', signupDetails.name);
-    formData.append('email', signupDetails.email);
-    formData.append('password', signupDetails.password);
-    formData.append('contactNumber', phone ? `+${phone}` : "");
-    formData.append('type', signupDetails.type);
-    formData.append('bio', signupDetails.bio || "");
-    formData.append('skills', signupDetails.skills.join(', '));
-    formData.append('education', JSON.stringify(signupDetails.education));
-
-    // Append files if they are present
-    if (signupDetails.resume) {
-      formData.append('resume', signupDetails.resume);
-    }
-    if (signupDetails.profile) {
-      formData.append('profile', signupDetails.profile);
-    }
-
+  const checkEmailExists = async (email) => {
+    if (!email) return false;
+    
     try {
-      const response = await axios.post(apiList.signup, formData, {
+      setIsCheckingEmail(true);
+      const response = await axios.post(apiList.checkEmail, { email });
+      if (response.data.exists) {
+        setEmailError('This email is already registered');
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error('Error checking email:', err);
+      return false;
+    } finally {
+      setIsCheckingEmail(false);
+    }
+  };
+
+  const handleEducationChange = (index, field, value) => {
+    setFormData(prev => {
+      const newEducation = [...prev.education];
+      newEducation[index] = { ...newEducation[index], [field]: value };
+      return { ...prev, education: newEducation };
+    });
+  };
+
+  const addEducation = () => {
+    setFormData(prev => ({
+      ...prev,
+      education: [...prev.education, { institutionName: '', startYear: '', endYear: '' }]
+    }));
+  };
+
+  const removeEducation = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      education: prev.education.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleFileUpload = async (file, type) => {
+    if (!file) return null;
+  
+    // Validate file type
+    if (type === 'resume' && !file.type.includes('pdf')) {
+      setError('Resume must be a PDF file');
+      return null;
+    }
+  
+    // Validate file size (e.g., 5MB limit)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      setError(`File size must be less than ${maxSize / 1024 / 1024}MB`);
+      return false;
+    }
+  
+    const formData = new FormData();
+    formData.append('file', file);
+  
+    try {
+      setUploadProgress({ ...uploadProgress, [type]: true });
+  
+      const config = {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-      });
-      localStorage.setItem('token', response.data.token);
-      setLoggedin(isAuth());
-      setPopup({
-        open: true,
-        severity: "success",
-        message: "Signup successful!",
-      });
-      navigate('/');
+      };
+  
+      const response = await axios.post(
+        type === 'resume' ? apiList.uploadResume : apiList.uploadProfileImage,
+        formData,
+        config
+      );
+  
+      if (response.data && response.data.url) {
+        return response.data.url;
+      } else {
+        throw new Error('No URL in response');
+      }
     } catch (err) {
-      setPopup({
-        open: true,
-        severity: "error",
-        message: err.response?.data?.message || 'Signup failed',
-      });
+      console.error(`${type} upload failed:`, err.response?.data || err.message);
+      setError(`${type === 'resume' ? 'Resume' : 'Profile image'} upload failed: ${err.response?.data?.message || err.message}`);
+      return null;
+    
+    } finally {
+      setUploadProgress({ ...uploadProgress, [type]: false });
     }
   };
 
-  if (loggedin) {
-    return null; // Prevent rendering signup form when logged in
-  }
+  // const handleFileUpload = async (file, type) => {
+  //   if (!file) return null;
+  
+  //   const formData = new FormData();
+  //   formData.append('file', file); // Ensure the key is 'file'
+  
+  //   try {
+  //     setUploadProgress({ ...uploadProgress, [type]: true });
+  
+  //     const config = {
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data', // Ensure this header is set
+  //       },
+  //     };
+  
+  //     const response = await axios.post(
+  //       type === 'resume' ? apiList.uploadResume : apiList.uploadProfileImage,
+  //       formData,
+  //       config
+  //     );
+  
+  //     if (response.data && response.data.url) {
+  //       return response.data.url;
+  //     } else {
+  //       throw new Error('No URL in response');
+  //     }
+  //   } catch (err) {
+  //     console.error(`${type} upload failed:`, err);
+  //     setError(`${type === 'resume' ? 'Resume' : 'Profile image'} upload failed: ${err.response?.data?.message || err.message}`);
+  //     return null;
+  //   } finally {
+  //     setUploadProgress({ ...uploadProgress, [type]: false });
+  //   }
+  // };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      let submitData = {
+        email: formData.email,
+        password: formData.password,
+        type: formData.type,
+        name: formData.name,
+        education: formData.education.map(edu => ({
+          ...edu,
+          startYear: parseInt(edu.startYear),
+          endYear: parseInt(edu.endYear)
+        })),
+        skills: formData.skills ? formData.skills.split(',').map(skill => skill.trim()) : [],
+        bio: formData.bio,
+        contactNumber: formData.contactNumber,
+      };
+      console.log('before form data.resume',formData.resume);
+      if (formData.resume) {
+        console.log('inside if data.resume');
+        const resumeUrl = await handleFileUpload(formData.resume, 'resume');
+
+        console.log('resumeurl',resumeUrl)
+
+        if (resumeUrl) {
+          submitData.resume = resumeUrl;
+        }
+      }
+
+      if (formData.profile) {
+        const profileUrl = await handleFileUpload(formData.profile, 'profile');
+        if (profileUrl) {
+          submitData.profile = profileUrl;
+        }
+      }
+
+      console.log("Submitting data:", submitData);
+    
+      const response = await axios.post(apiList.signup, submitData);
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('type', response.data.type);
+        navigate('/');
+      } else {
+        throw new Error('No token received');
+      }
+    } catch (err) {
+      let errorMessage = 'Signup failed';
+      
+      if (err.response) {
+        if (err.response.data.code === 11000) {
+          errorMessage = 'This email is already registered';
+        } else {
+          errorMessage = err.response.data.message || errorMessage;
+        }
+      }
+      
+      setError(errorMessage);
+      console.error('Signup error:', err);
+    }
+  };
 
   return (
-    <Paper elevation={3} style={{ padding: "40px" }}>
-      <Box display="flex" flexDirection="column" alignItems="center" gap={3}>
-        <Box>
-          <Typography variant="h4">Signup</Typography>
-        </Box>
-        <Box>
-          <TextField
-            select
-            label="Category"
-            value={signupDetails.type}
-            onChange={(e) => handleInput("type", e.target.value)}
-            fullWidth
-          >
-            <MenuItem value="applicant">Applicant</MenuItem>
-            <MenuItem value="recruiter">Recruiter</MenuItem>
-          </TextField>
-        </Box>
-        <Box>
-          <TextField
-            label="Name"
-            value={signupDetails.name}
-            onChange={(e) => handleInput("name", e.target.value)}
-            fullWidth
-            error={inputErrorHandler.name.error}
-            helperText={inputErrorHandler.name.message}
-          />
-        </Box>
-        <Box>
-          <EmailInput
-            value={signupDetails.email}
-            onChange={(e) => handleInput("email", e.target.value)}
-            error={inputErrorHandler.email.error}
-            helperText={inputErrorHandler.email.message}
-          />
-        </Box>
-        <Box>
-          <PasswordInput
-            value={signupDetails.password}
-            onChange={(e) => handleInput("password", e.target.value)}
-            error={inputErrorHandler.password.error}
-            helperText={inputErrorHandler.password.message}
-          />
-        </Box>
-        {signupDetails.type === "applicant" && (
-          <>
-            {education.map((edu, idx) => (
-              <Box display="flex" gap={2} key={idx}>
-                <Box flex={1}>
-                  <TextField
-                    label={`Experience#${idx + 1}`}
-                    value={edu.institutionName}
-                    onChange={(e) =>
-                      setEducation((prev) => {
-                        const updated = [...prev];
-                        updated[idx].institutionName = e.target.value;
-                        return updated;
-                      })
-                    }
-                  />
-                </Box>
-                <Box flex={0.5}>
-                  <TextField
-                    label="Start Year"
-                    type="number"
-                    value={edu.startYear}
-                    onChange={(e) =>
-                      setEducation((prev) => {
-                        const updated = [...prev];
-                        updated[idx].startYear = e.target.value;
-                        return updated;
-                      })
-                    }
-                  />
-                </Box>
-                <Box flex={0.5}>
-                  <TextField
-                    label="End Year"
-                    type="number"
-                    value={edu.endYear}
-                    onChange={(e) =>
-                      setEducation((prev) => {
-                        const updated = [...prev];
-                        updated[idx].endYear = e.target.value;
-                        return updated;
-                      })
-                    }
-                  />
-                </Box>
-              </Box>
-            ))}
-            <Button
-              onClick={() =>
-                setEducation((prev) => [
-                  ...prev,
-                  { institutionName: "", startYear: "", endYear: "" },
-                ])
-              }
-            >
-              Add experience
-            </Button>
-            <Box>
-              <TextField
-                label="Skills"
-                value={signupDetails.skills.join(', ')} // Join skills with comma separation
-                onChange={(e) => {
-                  const newSkills = e.target.value.split(',').map((skill) => skill.trim()); // Split input by commas
-                  handleInput("skills", newSkills); // Update the skills in signupDetails
-                }}
-                helperText="Enter skills separated by commas (Press Enter after each skill)"
-                fullWidth
-              />
-            </Box>
+    <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 600, mx: 'auto', p: 3 }}>
+      <Typography variant="h4" gutterBottom>Signup</Typography>
+      
+      <TextField
+        select
+        fullWidth
+        margin="normal"
+        label="Category"
+        value={formData.type}
+        onChange={(e) => handleInputChange('type', e.target.value)}
+      >
+        <MenuItem value="applicant">Applicant</MenuItem>
+        <MenuItem value="recruiter">Recruiter</MenuItem>
+      </TextField>
 
-            <Box>
-              <FileUploadInput
-                label="Resume (.pdf)"
-                uploadTo={apiList.uploadResume}
-                handleInput={handleInput}
-                identifier={"resume"}
+      <TextField
+        fullWidth
+        margin="normal"
+        label="Name"
+        value={formData.name}
+        onChange={(e) => handleInputChange('name', e.target.value)}
+        required
+      />
+
+      <TextField
+        fullWidth
+        margin="normal"
+        label="Email"
+        type="email"
+        value={formData.email}
+        onChange={handleEmailChange}
+        error={!!emailError}
+        helperText={emailError || (isCheckingEmail ? 'Checking email...' : '')}
+        required
+      />
+
+      <TextField
+        fullWidth
+        margin="normal"
+        label="Password"
+        type="password"
+        value={formData.password}
+        onChange={(e) => handleInputChange('password', e.target.value)}
+        required
+      />
+
+      {formData.type === 'applicant' && (
+        <>
+          <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>Education</Typography>
+          {formData.education.map((edu, index) => (
+            <Box key={index} sx={{ mb: 2, p: 2, border: '1px solid #ddd', borderRadius: 1 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="subtitle1">Education #{index + 1}</Typography>
+                {formData.education.length > 1 && (
+                  <IconButton onClick={() => removeEducation(index)} size="small">
+                    <Minus className="h-4 w-4" />
+                  </IconButton>
+                )}
+              </Box>
+              
+              <TextField
+                fullWidth
+                margin="normal"
+                label="Institution Name"
+                value={edu.institutionName}
+                onChange={(e) => handleEducationChange(index, 'institutionName', e.target.value)}
+                required
+              />
+              
+              <TextField
+                fullWidth
+                margin="normal"
+                label="Start Year"
+                type="number"
+                value={edu.startYear}
+                onChange={(e) => handleEducationChange(index, 'startYear', e.target.value)}
+                required
+              />
+              
+              <TextField
+                fullWidth
+                margin="normal"
+                label="End Year"
+                type="number"
+                value={edu.endYear}
+                onChange={(e) => handleEducationChange(index, 'endYear', e.target.value)}
+                required
               />
             </Box>
-            <Box>
-              <FileUploadInput
-                label="Profile Photo (.jpg/.png)"
-                uploadTo={apiList.uploadProfileImage}
-                handleInput={handleInput}
-                identifier={"profile"}
-              />
-            </Box>
-          </>
-        )}
-        {signupDetails.type === "recruiter" && (
-          <>
-            <TextField
-              label="Bio"
-              multiline
-              rows={4}
-              value={signupDetails.bio}
-              onChange={(e) => handleInput("bio", e.target.value)}
+          ))}
+          
+          <Button
+            startIcon={<Plus className="h-4 w-4" />}
+            onClick={addEducation}
+            variant="outlined"
+            fullWidth
+            sx={{ mb: 2 }}
+          >
+            Add Education
+          </Button>
+
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Skills (comma-separated)"
+            value={formData.skills}
+            onChange={(e) => handleInputChange('skills', e.target.value)}
+          />
+          
+          <Box sx={{ my: 2 }}>
+            <Typography variant="subtitle1" gutterBottom>Resume (PDF)</Typography>
+            <input
+              type="file"
+              accept=".pdf"
+              onChange={(e) => handleInputChange('resume', e.target.files[0])}
             />
-            <PhoneInput
-              country="in"
-              value={phone}
-              onChange={(value) => setPhone(value)}
+          </Box>
+          
+          <Box sx={{ my: 2 }}>
+            <Typography variant="subtitle1" gutterBottom>Profile Picture</Typography>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleInputChange('profile', e.target.files[0])}
             />
-          </>
-        )}
-        <Button onClick={handleSubmit} variant="contained" color="primary">
-          Signup
-        </Button>
-      </Box>
-    </Paper>
+          </Box>
+        </>
+      )}
+
+      {formData.type === 'recruiter' && (
+        <>
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Bio"
+            multiline
+            rows={4}
+            value={formData.bio}
+            onChange={(e) => handleInputChange('bio', e.target.value)}
+          />
+          
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Contact Number"
+            value={formData.contactNumber}
+            onChange={(e) => handleInputChange('contactNumber', e.target.value)}
+          />
+        </>
+      )}
+
+      {error && (
+        <Typography color="error" sx={{ mt: 2 }}>
+          {error}
+        </Typography>
+      )}
+      
+      <Button
+        type="submit"
+        variant="contained"
+        color="primary"
+        fullWidth
+        sx={{ mt: 3 }}
+        disabled={isCheckingEmail || !!emailError}
+      >
+        Sign Up
+      </Button>
+    </Box>
   );
 };
 

@@ -6,7 +6,7 @@ require("mongoose-type-email");
 let schema = new mongoose.Schema(
   {
     email: {
-      type: mongoose.SchemaTypes.Email,
+      type: String,
       unique: true,
       lowercase: true,
       required: true,

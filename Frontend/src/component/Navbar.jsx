@@ -21,6 +21,8 @@ const StyledButton = styled(Button)(({ theme }) => ({
 
 const Navbar = () => {
   const navigate = useNavigate(); // Replaced useHistory with useNavigate
+  console.log("isAuth():", isAuth());
+  console.log("userType():", userType());
 
   const handleClick = (location) => {
     console.log(location);

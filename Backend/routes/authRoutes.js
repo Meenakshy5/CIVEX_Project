@@ -3,74 +3,54 @@ const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const authKeys = require("../lib/authKeys");
 const bcrypt = require('bcrypt');
-const User = require("../db/User");
-const JobApplicant = require("../db/JobApplicant");
-const Recruiter = require("../db/Recruiter");
+const UserAuth = require("../db/User");
+const JobApplicantInfo = require("../db/JobApplicant");
+const RecruiterInfo = require("../db/Recruiter");
 const Admin = require('../db/Admin');
 
 const router = express.Router();
 
-router.post("/signup", (req, res) => {
-  const data = req.body;
+router.post('/check-email', async (req, res) => {
+  try {
+    const { email } = req.body;
+    const existingUser = await UserAuth.findOne({ email });
+    res.json({ exists: !!existingUser });
+  } catch (err) {
+    res.status(500).json({ message: 'Error checking email' });
+  }
+}); 
 
-    // Add validation to prevent undefined values
-    if (!data.email || !data.password || !data.type) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
-    
-  let user = new User({
-    email: data.email,
-    password: data.password,
-    type: data.type,
-  });
+router.post('/signup', async (req, res) => {
+  try {
+    const { email, password, type, name, education, skills, resume, profile, bio, contactNumber } = req.body;
 
-  user
-    .save()
-    .then(() => {
-      const userDetails =
-        user.type == "recruiter"
-          ? new Recruiter({
-              userId: user._id,
-              name: data.name,
-              contactNumber: data.contactNumber,
-              bio: data.bio,
-              status:data.status,
-            })
-          : new JobApplicant({
-              userId: user._id,
-              name: data.name,
-              education: data.education,
-              skills: data.skills,
-              rating: data.rating,
-              resume: data.resume,
-              profile: data.profile,
-            });
+    const user = new UserAuth({ email, password, type });
+    await user.save();
 
-      userDetails
-        .save()
-        .then(() => {
-          // Token
-          const token = jwt.sign({ _id: user._id }, authKeys.jwtSecretKey);
-          res.json({
-            token: token,
-            type: user.type,
-          });
+    const userDetails = type === 'recruiter'
+      ? new RecruiterInfo({
+          userId: user._id,
+          name,
+          contactNumber,
+          bio,
+          status: 'pending'
         })
-        .catch((err) => {
-          user
-            .delete()
-            .then(() => {
-              res.status(400).json(err);
-            })
-            .catch((err) => {
-              res.json({ error: err });
-            });
-          err;
+      : new JobApplicantInfo({
+          userId: user._id,
+          name,
+          education,
+          skills,
+          resume,
+          profile,
         });
-    })
-    .catch((err) => {
-      res.status(400).json(err);
-    });
+
+    await userDetails.save();
+
+    const token = jwt.sign({ _id: user._id }, authKeys.jwtSecretKey);
+    res.json({ token, type });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
 });
 
 // Login route to handle both normal users and admin login
@@ -119,5 +99,6 @@ router.post("/login", async (req, res, next) => {
     }
   })(req, res, next);
 });
+
 
 module.exports = router;

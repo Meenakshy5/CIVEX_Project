@@ -14,7 +14,8 @@ const apiList = {
   recruiters:`${server}/admin/recruiterinfos`,
   approveRecruiter:(id) => `${server}/admin/recruiterinfos/${id}`,
   deleteRecruiter:(id) => `${server}/admin/recruiterinfos/${id}`,
-  dashboardStats: `${server}/admin/dashboard/stats`
+  dashboardStats: `${server}/admin/dashboard/stats`,
+  checkEmail: `${server}/auth/check-email`,
 };
 
 export default apiList;

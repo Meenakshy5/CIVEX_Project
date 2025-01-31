@@ -1,9 +1,10 @@
 import React from 'react';
-import { Grid2, Typography, Box, Container, Avatar, Button } from '@mui/material';
+import { Grid2, Typography, Box, Container, Avatar, Button,Card, CardContent,Link,IconButton } from '@mui/material';
 import { keyframes } from '@mui/system';
 import "@fontsource/montserrat"; // Import a Google Font
 import "@fontsource/lobster";  
 import CountUp from 'react-countup';
+import { Facebook, Twitter, LinkedIn } from "@mui/icons-material";
 
 // Define animation for the logo
 const logoAnimation = keyframes`
@@ -29,7 +30,7 @@ const Welcome = () => {
         style={{
           padding: '20px',  // Adjusted padding
           minHeight: '80vh',  // Reduced height
-          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/header.jpg")',
+          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/header (3).jpg")',
           backgroundSize: 'cover',  // Ensures the background covers the entire section
           backgroundPosition: 'center',  // Center the background image
           backgroundRepeat: 'no-repeat',  // Avoid tiling of the image
@@ -275,41 +276,311 @@ const Welcome = () => {
 </Grid2>
 
 
-      {/* Popular Companies Section */}
-      <Grid2 container item direction="column" alignItems="center" justify="center" style={{ padding: '30px', backgroundColor: '#54876e' }}>
-        <Typography variant="h4" gutterBottom>
-          Popular Companies
-        </Typography>
-        <Grid2 container item spacing={4} justify="center">
-          {/* Company 1 */}
-          <Grid2 item>
-            <Avatar src="windows.png" alt="Microsoft" sx={{ width: 100, height: 100 }} />
-          </Grid2>
-          {/* Company 2 */}
-          <Grid2 item>
-            <Avatar src="/twitter.png" alt="Twitter" sx={{ width: 100, height: 100 }} />
-          </Grid2>
-        </Grid2>
-      </Grid2>
+{/* Popular Companies Section */}
+<Grid2
+  container
+  item
+  direction="column"
+  alignItems="center"
+  justifyContent="center"
+  style={{ padding: '30px', backgroundColor: '#54876e' }}
+>
+  <Typography
+    variant="h4"
+    gutterBottom
+    style={{ color: '#fff', fontWeight: 'bold' }}
+  >
+    Popular Companies
+  </Typography>
+  <Grid2 container item spacing={4} justifyContent="center">
+    {/* Company 1 */}
+    <Grid2 item>
+      <Card
+        sx={{
+          width: 200,
+          textAlign: 'center',
+          padding: 2,
+          backgroundColor: '#fff',
+          borderRadius: 4,
+          boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+          '&:hover': {
+            transform: 'scale(1.05)',
+            transition: 'all 0.3s ease-in-out',
+          },
+        }}
+      >
+        <Avatar
+          src="windows.png"
+          alt="Microsoft"
+          sx={{
+            width: 80,
+            height: 80,
+            margin: '0 auto',
+            marginBottom: 2,
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+          }}
+        />
+        <CardContent>
+          <Typography
+            variant="h6"
+            style={{ fontWeight: 'bold', color: '#333' }}
+          >
+            Microsoft
+          </Typography>
+          <Typography variant="body2" style={{ color: '#555' }}>
+            Microsoft develops software, services, and solutions for a better
+            world.
+          </Typography>
+        </CardContent>
+      </Card>
+    </Grid2>
+    {/* Company 2 */}
+    <Grid2 item>
+      <Card
+        sx={{
+          width: 200,
+          textAlign: 'center',
+          padding: 2,
+          backgroundColor: '#fff',
+          borderRadius: 4,
+          boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+          '&:hover': {
+            transform: 'scale(1.05)',
+            transition: 'all 0.3s ease-in-out',
+          },
+        }}
+      >
+        <Avatar
+          src="/twitter.png"
+          alt="Twitter"
+          sx={{
+            width: 80,
+            height: 80,
+            margin: '0 auto',
+            marginBottom: 2,
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+          }}
+        />
+        <CardContent>
+          <Typography
+            variant="h6"
+            style={{ fontWeight: 'bold', color: '#333' }}
+          >
+            Twitter
+          </Typography>
+          <Typography variant="body2" style={{ color: '#555' }}>
+            Twitter is a social networking service to connect with people
+            globally.
+          </Typography>
+        </CardContent>
+      </Card>
+    </Grid2>
+    {/* Add more companies here */}
+  </Grid2>
+</Grid2>
 
-      {/* Success Stories Section */}
-      <Grid2 container item direction="column" alignItems="center" justify="center" style={{ padding: '30px' }}>
-        <Typography variant="h4" gutterBottom>
-          Success Stories
-        </Typography>
-        <Grid2 container item spacing={4} justify="center">
-          {/* Success Story 1 */}
-          <Grid2 item>
-            <Avatar src="/person1.jpg" alt="Person 1" sx={{ width: 80, height: 80 }} />
-            <Typography variant="body1">Sarah Miller - Recruited at Company X</Typography>
+
+     {/* Success Stories Section */}
+<Grid2
+  container
+  item
+  direction="column"
+  alignItems="center"
+  justifyContent="center"
+  className="success-stories-section"
+  style={{ padding: '30px', backgroundColor: '#f8f9fa' }}
+>
+  <Typography
+    variant="h4"
+    gutterBottom
+    className="success-stories-title"
+    style={{ marginBottom: '20px', fontWeight: 'bold', color: '#2a4158' }}
+  >
+    Success Stories
+  </Typography>
+
+  <Grid2 container item spacing={4} justifyContent="center">
+    {/* Success Story 1 */}
+    <Grid2 item>
+      <Card
+        className="success-story-card"
+        style={{
+          maxWidth: 300,
+          borderRadius: '15px',
+          boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+        }}
+      >
+        <CardContent style={{ textAlign: 'center' }}>
+          <Avatar
+            src="/person1.jpg"
+            alt="Sarah Miller"
+            sx={{
+              width: 100,
+              height: 100,
+              margin: '0 auto',
+              marginBottom: '10px',
+            }}
+          />
+          <Typography
+            variant="h6"
+            className="success-story-name"
+            style={{ fontWeight: 'bold', color: '#2a4158' }}
+          >
+            Sarah Miller
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            className="success-story-company"
+            style={{ marginBottom: '10px', color: '#4a4a4a' }}
+          >
+            Recruited at Company X
+          </Typography>
+          <Typography
+            variant="body2"
+            className="success-story-statement"
+            style={{ color: '#555' }}
+          >
+            "The training and exposure I gained at CIVEX truly shaped
+            my career. The journey has been incredible!"
+          </Typography>
+        </CardContent>
+      </Card>
+    </Grid2>
+
+    {/* Success Story 2 */}
+    <Grid2 item>
+      <Card
+        className="success-story-card"
+        style={{
+          maxWidth: 300,
+          borderRadius: '15px',
+          boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+        }}
+      >
+        <CardContent style={{ textAlign: 'center' }}>
+          <Avatar
+            src="/person2.jpg"
+            alt="Jane Smith"
+            sx={{
+              width: 100,
+              height: 100,
+              margin: '0 auto',
+              marginBottom: '10px',
+            }}
+          />
+          <Typography
+            variant="h6"
+            className="success-story-name"
+            style={{ fontWeight: 'bold', color: '#2a4158' }}
+          >
+            Jane Smith
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            className="success-story-company"
+            style={{ marginBottom: '10px', color: '#4a4a4a' }}
+          >
+            Recruited at Company Y
+          </Typography>
+          <Typography
+            variant="body2"
+            className="success-story-statement"
+            style={{ color: '#555' }}
+          >
+            "CIVEX equipped me with skills and confidence to achieve my
+            dreams. I’ll always cherish this experience!"
+          </Typography>
+        </CardContent>
+      </Card>
+    </Grid2>
+  </Grid2>
+</Grid2>
+
+ {/* Footer Section */}
+ <Grid2 item>
+        <Box
+          sx={{
+            backgroundColor: "#263238", // Dark background
+            color: "#ffffff", // White text
+            padding: "2rem 1rem",
+          }}
+        >
+          <Grid2 container spacing={4}>
+            {/* Left Column: Logo and Description */}
+            <Grid2 item xs={12} md={4}>
+              <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                CIVEX
+              </Typography>
+              <Typography variant="body2" sx={{ marginTop: 1 }}>
+                Empowering Veterans and Building a Stronger Tomorrow.
+              </Typography>
+            </Grid2>
+
+            {/* Middle Column: Quick Links */}
+            <Grid2 item xs={12} md={4}>
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                Quick Links
+              </Typography>
+              <Box sx={{ marginTop: 1 }}>
+                <Link href="#" underline="hover" sx={{ display: "block", color: "inherit", marginBottom: 0.5 }}>
+                  Home
+                </Link>
+                <Link href="#" underline="hover" sx={{ display: "block", color: "inherit", marginBottom: 0.5 }}>
+                  About Us
+                </Link>
+                <Link href="#" underline="hover" sx={{ display: "block", color: "inherit", marginBottom: 0.5 }}>
+                  Contact Us
+                </Link>
+                <Link href="#" underline="hover" sx={{ display: "block", color: "inherit" }}>
+                  FAQ
+                </Link>
+              </Box>
+            </Grid2>
+
+            {/* Right Column: Contact and Map */}
+            <Grid2 item xs={12} md={4}>
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                Contact
+              </Typography>
+              <Typography variant="body2" sx={{ marginTop: 1 }}>
+                Email: info@civex.com
+              </Typography>
+              <Typography variant="body2">Phone: +91-9876543210</Typography>
+              <Box sx={{ display: "flex", gap: 1, marginTop: 2 }}>
+                <IconButton href="#" sx={{ color: "inherit" }}>
+                  <Facebook />
+                </IconButton>
+                <IconButton href="#" sx={{ color: "inherit" }}>
+                  <Twitter />
+                </IconButton>
+                <IconButton href="#" sx={{ color: "inherit" }}>
+                  <LinkedIn />
+                </IconButton>
+              </Box>
+
+              {/* Embedded Google Map */}
+              <Box sx={{ marginTop: 2, borderRadius: "8px", overflow: "hidden" }}>
+                <iframe
+                  title="Google Map"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.5119466267277!2d144.963157815318!3d-37.8141079797517!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad642af0f11fd81%3A0x5045675218ce6e0!2sMelbourne%20VIC%2C%20Australia!5e0!3m2!1sen!2sus!4v1617656548407!5m2!1sen!2sus"
+                  width="100%"
+                  height="150"
+                  style={{ border: "0" }}
+                  allowFullScreen=""
+                  loading="lazy"
+                ></iframe>
+              </Box>
+            </Grid2>
           </Grid2>
-          {/* Success Story 2 */}
-          <Grid2 item>
-            <Avatar src="/person2.jpg" alt="Person 2" sx={{ width: 80, height: 80 }} />
-            <Typography variant="body1">Jane Smith - Recruited at Company Y</Typography>
-          </Grid2>
-        </Grid2>
+
+          {/* Footer Bottom */}
+          <Typography variant="body2" sx={{ textAlign: "center", marginTop: 4, color: "#b0bec5" }}>
+            © 2025 CIVEX. All rights reserved.
+          </Typography>
+        </Box>
       </Grid2>
+    
+
     </div>
   );
 };

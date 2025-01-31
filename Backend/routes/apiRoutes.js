@@ -875,6 +875,8 @@ router.put("/applications/:id", jwtAuth, (req, res) => {
   }
 });
 
+// -----------------------------------------------------------------------------------------------------------------------
+
 // get a list of final applicants for current job : recruiter
 // get a list of final applicants for all his jobs : recuiter
 router.get("/applicants", jwtAuth, (req, res) => {
@@ -980,6 +982,10 @@ router.get("/applicants", jwtAuth, (req, res) => {
     });
   }
 });
+
+
+
+// =--------------------------------------------------------------------------------------------------------------------------------------
 
 // to add or update a rating [todo: test]
 router.put("/rating", jwtAuth, (req, res) => {

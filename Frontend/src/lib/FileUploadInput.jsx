@@ -16,7 +16,7 @@ const FileUploadInput = ({ uploadTo, identifier, handleInput, className, icon, l
     setUploadPercentage(0);
     setFile(selectedFile);
   };
-
+ 
   // Handle file upload
   const handleUpload = () => {
     if (!file) return;
