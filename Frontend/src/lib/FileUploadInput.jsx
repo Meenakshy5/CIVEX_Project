@@ -20,12 +20,15 @@ const FileUploadInput = ({ uploadTo, identifier, handleInput, className, icon, l
   // Handle file upload
   const handleUpload = () => {
     if (!file) return;
-
+  
     const data = new FormData();
     data.append("file", file);
-
+  
     Axios.post(uploadTo, data, {
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${localStorage.getItem("token")}`, // Add the token here
+      },
       onUploadProgress: (progressEvent) => {
         setUploadPercentage(Math.round((progressEvent.loaded * 100) / progressEvent.total));
       },

@@ -12,6 +12,22 @@ cloudinary.config({
 
 const upload = multer({ storage: multer.memoryStorage() });
 
+// Middleware to attach user ID to request
+const authMiddleware = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (token) {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+      req.user_id = decoded.id;
+      next();
+    });
+  } else {
+    res.status(401).json({ message: 'No token provided' });
+  }
+};
+
 // Upload Resume
 router.post('/resume', upload.single('file'), async (req, res) => {
   try {
