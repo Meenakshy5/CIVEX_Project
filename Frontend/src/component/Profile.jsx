@@ -1,4 +1,3 @@
-
 import { useContext, useEffect, useState } from "react";
 import {
   Button,
@@ -7,18 +6,16 @@ import {
   Modal,
   Paper,
   TextField,
-} from "@mui/material"; // Removed the extra space
-import {  Chip, InputAdornment } from "@mui/material";
-import { makeStyles } from "@mui/styles"; // Import from @mui/styles for MUI v5
+} from "@mui/material";
+import { Chip, InputAdornment } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import axios from "axios";
 import FileUploadInput from "../lib/FileUploadInput";
-import DescriptionIcon from "@mui/icons-material/Description"; // Updated import for MUI v5
-import FaceIcon from "@mui/icons-material/Face"; // Updated import for MUI v5
-
+import DescriptionIcon from "@mui/icons-material/Description";
+import FaceIcon from "@mui/icons-material/Face";
 import { SetPopupContext } from "../App";
 import CustomChipInput from "../lib/CustomChipInput";
 import apiList from "../lib/apiList";
-
 
 const useStyles = makeStyles((theme) => ({
   body: {
@@ -29,7 +26,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    // padding: "30px",
   },
 }));
 
@@ -177,8 +173,6 @@ const Profile = (props) => {
   };
 
   const handleUpdate = () => {
-    console.log(education);
-
     let updatedDetails = {
       ...profileDetails,
       education: education
@@ -190,7 +184,7 @@ const Profile = (props) => {
           return obj;
         }),
     };
-
+  
     axios
       .put(apiList.user, updatedDetails, {
         headers: {
@@ -203,7 +197,7 @@ const Profile = (props) => {
           severity: "success",
           message: response.data.message,
         });
-        getData();
+        getData(); // Fetch updated data after successful update
       })
       .catch((err) => {
         setPopup({
@@ -254,19 +248,26 @@ const Profile = (props) => {
                 education={education}
                 setEducation={setEducation}
               />
-             <Grid item>
-             <Grid item xs={12}>
-              <CustomChipInput
-                label="Skills"
-                value={profileDetails.skills}  // Pass the skills array from state
-                onChange={(updatedSkills) => handleInput("skills", updatedSkills)}  // Update skills on change
-              />
-              </Grid>
+              <Grid item>
+                <Grid item xs={12}>
+                  <CustomChipInput
+                    label="Skills"
+                    value={profileDetails.skills}
+                    onChange={(updatedSkills) => handleInput("skills", updatedSkills)}
+                  />
+                </Grid>
               </Grid>
               <Grid item>
+                {profileDetails.resume && (
+                  <Typography variant="body1">
+                    <a href={profileDetails.resume} target="_blank" rel="noopener noreferrer">
+                      View Current Resume
+                    </a>
+                  </Typography>
+                )}
                 <FileUploadInput
                   className={classes.inputBox}
-                  label="Resume (.pdf)"
+                  label="Upload New Resume (.pdf)"
                   icon={<DescriptionIcon />}
                   uploadTo={apiList.uploadResume}
                   handleInput={handleInput}
@@ -274,9 +275,16 @@ const Profile = (props) => {
                 />
               </Grid>
               <Grid item>
+                {profileDetails.profile && (
+                  <Typography variant="body1">
+                    <a href={profileDetails.profile} target="_blank" rel="noopener noreferrer">
+                      View Current Profile Photo
+                    </a>
+                  </Typography>
+                )}
                 <FileUploadInput
                   className={classes.inputBox}
-                  label="Profile Photo (.jpg/.png)"
+                  label="Upload New Profile Photo (.jpg/.png)"
                   icon={<FaceIcon />}
                   uploadTo={apiList.uploadProfileImage}
                   handleInput={handleInput}
@@ -295,9 +303,6 @@ const Profile = (props) => {
           </Paper>
         </Grid>
       </Grid>
-      {/* <Modal open={open} onClose={handleClose} className={classes.popupDialog}> */}
-
-      {/* </Modal> */}
     </>
   );
 };

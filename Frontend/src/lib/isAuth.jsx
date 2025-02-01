@@ -5,7 +5,6 @@ const isAuth = () => {
 
 export const userType = () => {
   const type = localStorage.getItem("type");
-  console.log(type);
   return type ? type : null; // Return null explicitly if "type" is not set
 };
 
