@@ -302,11 +302,8 @@ const ApplicationTile = (props) => {
   };
 
   const getResume = () => {
-    if (
-      application.jobApplicant.resume &&
-      application.jobApplicant.resume !== ""
-    ) {
-      const address = `${server}${application.jobApplicant.resume}`;
+    if (application.jobApplicant.resume && application.jobApplicant.resume !== "") {
+      const address = application.jobApplicant.resume; // Directly use the Cloudinary URL
       console.log(address);
       axios(address, {
         method: "GET",
@@ -495,10 +492,10 @@ const ApplicationTile = (props) => {
             alignItems: "center",
           }}
         >
-          <Avatar
-            src={`${server}${application.jobApplicant.profile}`}
-            className={classes.avatar}
-          />
+<Avatar
+  src={application.jobApplicant.profile} // Directly use the Cloudinary URL
+  className={classes.avatar}
+/>
         </Grid>
         <Grid container item xs={7} spacing={1} direction="column">
           <Grid item>
