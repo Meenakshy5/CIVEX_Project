@@ -45,10 +45,13 @@ router.post('/signup', async (req, res) => {
         });
 
     await userDetails.save();
+    console.log('User details saved:', userDetails);
+
 
     const token = jwt.sign({ _id: user._id }, authKeys.jwtSecretKey);
     res.json({ token, type });
   } catch (err) {
+    console.error('Error during signup:', err);
     res.status(400).json({ message: err.message });
   }
 });

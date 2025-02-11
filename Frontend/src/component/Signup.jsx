@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Minus } from 'lucide-react';
 import axios from 'axios';
 import apiList from "../lib/apiList";
+import 'react-phone-number-input/style.css'; // Import the styles
+import PhoneInput from 'react-phone-number-input'; // Import the PhoneInput component
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -133,41 +135,6 @@ const Signup = () => {
     }
   };
 
-  // const handleFileUpload = async (file, type) => {
-  //   if (!file) return null;
-  
-  //   const formData = new FormData();
-  //   formData.append('file', file); // Ensure the key is 'file'
-  
-  //   try {
-  //     setUploadProgress({ ...uploadProgress, [type]: true });
-  
-  //     const config = {
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data', // Ensure this header is set
-  //       },
-  //     };
-  
-  //     const response = await axios.post(
-  //       type === 'resume' ? apiList.uploadResume : apiList.uploadProfileImage,
-  //       formData,
-  //       config
-  //     );
-  
-  //     if (response.data && response.data.url) {
-  //       return response.data.url;
-  //     } else {
-  //       throw new Error('No URL in response');
-  //     }
-  //   } catch (err) {
-  //     console.error(`${type} upload failed:`, err);
-  //     setError(`${type === 'resume' ? 'Resume' : 'Profile image'} upload failed: ${err.response?.data?.message || err.message}`);
-  //     return null;
-  //   } finally {
-  //     setUploadProgress({ ...uploadProgress, [type]: false });
-  //   }
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -187,13 +154,9 @@ const Signup = () => {
         bio: formData.bio,
         contactNumber: formData.contactNumber,
       };
-      console.log('before form data.resume',formData.resume);
+
       if (formData.resume) {
-        console.log('inside if data.resume');
         const resumeUrl = await handleFileUpload(formData.resume, 'resume');
-
-        console.log('resumeurl',resumeUrl)
-
         if (resumeUrl) {
           submitData.resume = resumeUrl;
         }
@@ -374,13 +337,16 @@ const Signup = () => {
             onChange={(e) => handleInputChange('bio', e.target.value)}
           />
           
-          <TextField
-            fullWidth
-            margin="normal"
-            label="Contact Number"
-            value={formData.contactNumber}
-            onChange={(e) => handleInputChange('contactNumber', e.target.value)}
-          />
+          <Box sx={{ my: 2 }}>
+            <Typography variant="subtitle1" gutterBottom>Contact Number</Typography>
+            <PhoneInput
+              international
+              defaultCountry="IN" // Default country (India)
+              value={formData.contactNumber}
+              onChange={(value) => handleInputChange('contactNumber', value)}
+              style={{ width: '100%' }}
+            />
+          </Box>
         </>
       )}
 
