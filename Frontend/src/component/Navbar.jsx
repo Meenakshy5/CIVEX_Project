@@ -1,96 +1,99 @@
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-} from "@mui/material"; // Removed extra space
-import { useNavigate } from "react-router-dom"; // Updated useHistory to useNavigate
-import { styled } from '@mui/system'; // Import styled for MUI v5
-
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import isAuth, { userType } from "../lib/isAuth";
 
-// Define styled components instead of using makeStyles
-const StyledToolbar = styled(Toolbar)(({ theme }) => ({
-  flexGrow: 1,
-  justifyContent: "space-between", // Adjust layout of Toolbar elements
-}));
-
-const StyledButton = styled(Button)(({ theme }) => ({
-  marginRight: theme.spacing(2), // Apply spacing for buttons
-}));
-
 const Navbar = () => {
-  const navigate = useNavigate(); // Replaced useHistory with useNavigate
+  const navigate = useNavigate();
 
   const handleClick = (location) => {
     console.log(location);
-    navigate(location); // Use navigate instead of history.push
+    navigate(location);
   };
 
   return (
-    <AppBar position="fixed"sx={{ backgroundColor: '#355545' }}>
-      <StyledToolbar>
-        <Typography variant="h6" style={{ flexGrow: 1 }}>
-          CIVEX
-        </Typography>
-        {isAuth() ? (
-          userType() === "admin" ? (
-            // Show only the Logout button for admin users
-            <StyledButton color="inherit" onClick={() => handleClick("/logout")}>
-              Logout
-            </StyledButton>
-          ) :userType() === "recruiter" ? (
-            <>
-              <StyledButton color="inherit" onClick={() => handleClick("/home")}>
-                ALL JOBS
-              </StyledButton>
-              <StyledButton color="inherit" onClick={() => handleClick("/addjob")}>
-                Add Jobs
-              </StyledButton>
-              <StyledButton color="inherit" onClick={() => handleClick("/myjobs")}>
-                My Jobs
-              </StyledButton>
-              <StyledButton color="inherit" onClick={() => handleClick("/employees")}>
-                Employees
-              </StyledButton>
-              <StyledButton color="inherit" onClick={() => handleClick("/profile")}>
-                Profile
-              </StyledButton>
-              <StyledButton color="inherit" onClick={() => handleClick("/logout")}>
-                Logout
-              </StyledButton>
-            </>
-          ) : (
-            <>
-              <StyledButton color="inherit" onClick={() => handleClick("/home")}>
-              ALL JOBS
-              </StyledButton>
-              <StyledButton
-                color="inherit"
-                onClick={() => handleClick("/applications")}
-              >
-                Applications
-              </StyledButton>
-              <StyledButton color="inherit" onClick={() => handleClick("/profile")}>
-                Profile
-              </StyledButton>
-              <StyledButton color="inherit" onClick={() => handleClick("/logout")}>
-                Logout
-              </StyledButton>
-            </>
-          )
-        ) : (
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        width: "97%", 
+        backgroundColor: "#355545",
+        padding: "20px 30px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        color: "white",
+        fontSize: "18px",
+        fontFamily: 'Montserrat, sans-serif',
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+        zIndex: 1000, // Ensures it stays on top
+      }}
+    >
+      {/* Left Side - Logo */}
+      <div style={{ fontSize: "20px" }}>CIVEX</div>
+
+      {/* Center - Navigation Links */}
+      <div style={{ display: "flex", gap: "20px"}}>
+        {isAuth() && userType() !== "admin" && (
           <>
-            <StyledButton color="inherit" onClick={() => handleClick("/login")}>
-              Login
-            </StyledButton>
-            <StyledButton color="inherit" onClick={() => handleClick("/signup")}>
-              Signup
-            </StyledButton>
+            {userType() === "recruiter" ? (
+              <>
+                <HoverButton text="All Jobs" onClick={() => handleClick("/home")} />
+                <HoverButton text="Add Jobs" onClick={() => handleClick("/addjob")} />
+                <HoverButton text="My Jobs" onClick={() => handleClick("/myjobs")} />
+                <HoverButton text="Employees" onClick={() => handleClick("/employees")} />
+                <HoverButton text="Profile" onClick={() => handleClick("/profile")} />
+              </>
+            ) : (
+              <>
+                <HoverButton text="All Jobs" onClick={() => handleClick("/home")} />
+                <HoverButton text="Applications" onClick={() => handleClick("/applications")} />
+                <HoverButton text="Profile" onClick={() => handleClick("/profile")} />
+              </>
+            )}
           </>
         )}
-      </StyledToolbar>
-    </AppBar>
+      </div>
+
+      {/* Right Side - Login / Logout Buttons */}
+      <div>
+        {isAuth() ? (
+          <HoverButton text="Logout" isButton isRed onClick={() => handleClick("/logout")} />
+        ) : (
+          <>
+            <HoverButton text="Login" isButton isRed onClick={() => handleClick("/login")} />
+            <HoverButton text="Signup" isButton isRed onClick={() => handleClick("/signup")} />
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Reusable Component with Hover Effect
+const HoverButton = ({ text, onClick, isButton = false, isRed = false }) => {
+  const [hover, setHover] = useState(false);
+
+  return (
+    <span
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        cursor: "pointer",
+        fontSize: "16px",
+        color: isRed ? (hover ? "white" : "#FF0000") : hover ? "#8B0000" : "white", // White hover for Login/Logout, Dark Red hover for others
+        backgroundColor: isButton ? (hover ? "#8B0000" : "transparent") : "transparent",
+        padding: isButton ? "8px 16px" : "5px", // Adjusted padding for login/logout
+        border: isButton ? "1px solid white" : "none",
+        borderRadius: isButton ? "5px" : "0",
+        transition: "all 0.3s ease",
+        marginLeft: isButton ? "5px" : "0", // Shifted buttons slightly left
+      }}
+    >
+      {text}
+    </span>
   );
 };
 
