@@ -575,11 +575,11 @@ useEffect(() => {
     sx={{
       backgroundColor: "#355545", // Dark background
       color: "#ffffff", // White text
-      padding: "1.5rem 1rem", // Reduced padding for compact height
+      padding: "0.6rem 1rem", // Reduced padding for compact height
     }}
   >
-    {/* First Row: Logo, Subscribe, Quick Links */}
-    <Grid2 container spacing={40} >
+    {/* First Row: Logo, Quick Links */}
+    <Grid2 container spacing={120} >
       {/* Logo Section */}
       <Grid2 item xs={12} md={4} sx={{ textAlign: "left" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -589,6 +589,29 @@ useEffect(() => {
         <Typography variant="body2" sx={{ marginTop: 1 }}>
           Empowering Veterans and Building a Stronger Tomorrow.
         </Typography>
+      </Grid2>
+
+      {/* Quick Links Section */}
+      <Grid2 item xs={12} md={4} sx={{ textAlign: "right" }}>
+        <Typography variant="h6" sx={{ fontWeight: "bold" }}>Quick Links</Typography>
+        <Box sx={{ marginTop: 1 }}>
+          <Link href="#" underline="hover" sx={{ display: "block", color: "inherit", marginBottom: 0.5 }}>Home</Link>
+          <Link href="#" underline="hover" sx={{ display: "block", color: "inherit", marginBottom: 0.5 }}>About Us</Link>
+          <Link href="#" underline="hover" sx={{ display: "block", color: "inherit", marginBottom: 0.5 }}>Contact Us</Link>
+        </Box>
+      </Grid2>
+    </Grid2>
+
+    {/* Second Row: Social Media , Subscribe, Map */}
+    <Grid2 container spacing={44} alignItems="center" sx={{ marginTop: 2 }}>
+      {/* Social Media Links */}
+      <Grid2 item xs={12} md={4} sx={{ textAlign: "left" }}>
+        <Typography variant="h6" sx={{ fontWeight: "bold" }}>Follow Us</Typography>
+        <Box sx={{ display: "flex", gap: 1, marginTop: 1 }}>
+          <IconButton href="#" sx={{ color: "inherit" }}><Facebook /></IconButton>
+          <IconButton href="#" sx={{ color: "inherit" }}><Twitter /></IconButton>
+          <IconButton href="#" sx={{ color: "inherit" }}><LinkedIn /></IconButton>
+        </Box>
       </Grid2>
 
       {/* Subscribe Section */}
@@ -610,30 +633,6 @@ useEffect(() => {
           </Button>
         </Box>
       </Grid2>
-
-      {/* Quick Links Section */}
-      <Grid2 item xs={12} md={4} sx={{ textAlign: "right" }}>
-        <Typography variant="h6" sx={{ fontWeight: "bold" }}>Quick Links</Typography>
-        <Box sx={{ marginTop: 1 }}>
-          <Link href="#" underline="hover" sx={{ display: "block", color: "inherit", marginBottom: 0.5 }}>Home</Link>
-          <Link href="#" underline="hover" sx={{ display: "block", color: "inherit", marginBottom: 0.5 }}>About Us</Link>
-          <Link href="#" underline="hover" sx={{ display: "block", color: "inherit", marginBottom: 0.5 }}>Contact Us</Link>
-        </Box>
-      </Grid2>
-    </Grid2>
-
-    {/* Second Row: Social Media & Map */}
-    <Grid2 container spacing={60} alignItems="center" sx={{ marginTop: 2 }}>
-      {/* Social Media Links */}
-      <Grid2 item xs={12} md={4} sx={{ textAlign: "left" }}>
-        <Typography variant="h6" sx={{ fontWeight: "bold" }}>Follow Us</Typography>
-        <Box sx={{ display: "flex", gap: 1, marginTop: 1 }}>
-          <IconButton href="#" sx={{ color: "inherit" }}><Facebook /></IconButton>
-          <IconButton href="#" sx={{ color: "inherit" }}><Twitter /></IconButton>
-          <IconButton href="#" sx={{ color: "inherit" }}><LinkedIn /></IconButton>
-        </Box>
-      </Grid2>
-
       {/* Embedded Google Map */}
       <Grid2 item xs={12} md={8}>
         <Box sx={{ borderRadius: "8px", overflow: "hidden" }}>
