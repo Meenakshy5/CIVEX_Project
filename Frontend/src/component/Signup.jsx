@@ -196,7 +196,21 @@ const Signup = () => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 600, mx: 'auto', p: 3 }}>
+<Box
+  component="form"
+  onSubmit={handleSubmit}
+  sx={{ 
+    maxWidth: 600, 
+    mx: 'auto', 
+    p: 3, 
+    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Slight transparency
+    borderRadius: 2, 
+    boxShadow: 3,
+    zIndex: 1,
+    backdropFilter: 'blur(5px)' // Subtle blur effect
+  }}
+>
+
       <Typography variant="h4" gutterBottom>Signup</Typography>
       
       <TextField

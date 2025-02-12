@@ -38,9 +38,9 @@ const CustomChipInput = ({ label, value, onChange }) => {
         ))}
       </Grid>
       <Grid item>
-        <Button variant="outlined" onClick={handleAddChip}>
+        {/* <Button variant="outlined" onClick={handleAddChip}>
           Add Chip
-        </Button>
+        </Button> */}
       </Grid>
     </Grid>
   );
