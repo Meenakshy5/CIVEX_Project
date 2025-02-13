@@ -1,5 +1,5 @@
 import { React, useRef, useEffect } from "react";
-import { Grid2, Typography, Box, Container, Avatar, Button,Card, CardContent,Link,IconButton,TextField } from '@mui/material';
+import { Grid2, Typography, Box, Container, Avatar, Button,Card, CardContent,IconButton,TextField } from '@mui/material';
 import { keyframes } from '@mui/system';
 import "@fontsource/montserrat"; // Import a Google Font
 import "@fontsource/lobster";  
@@ -16,6 +16,7 @@ import BuildIcon from '@mui/icons-material/Build';
 import WorkIcon from '@mui/icons-material/Work';
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import { FaGoogle, FaApple, FaAmazon, FaMicrosoft, FaFacebook } from "react-icons/fa"; 
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
 
 
 // Define animation for the logo
@@ -66,6 +67,13 @@ const successStories = [
     image: "/th.jpg",
   },
 ];
+const linkStyle = {
+  display: "block",
+  color: "inherit",
+  marginBottom: "8px",
+  textDecoration: "none",
+  fontSize: "16px",
+};
 
 const Welcome = () => {
 // some parts of the success stories
@@ -591,15 +599,15 @@ useEffect(() => {
         </Typography>
       </Grid2>
 
-      {/* Quick Links Section */}
-      <Grid2 item xs={12} md={4} sx={{ textAlign: "right" }}>
-        <Typography variant="h6" sx={{ fontWeight: "bold" }}>Quick Links</Typography>
-        <Box sx={{ marginTop: 1 }}>
-          <Link href="#" underline="hover" sx={{ display: "block", color: "inherit", marginBottom: 0.5 }}>Home</Link>
-          <Link href="#" underline="hover" sx={{ display: "block", color: "inherit", marginBottom: 0.5 }}>About Us</Link>
-          <Link href="#" underline="hover" sx={{ display: "block", color: "inherit", marginBottom: 0.5 }}>Contact Us</Link>
-        </Box>
-      </Grid2>
+{/* Quick Links Section */}
+<Grid2 item xs={12} md={4} sx={{ textAlign: "right" }}>
+  <Typography variant="h6" sx={{ fontWeight: "bold" }}>Quick Links</Typography>
+  <Box sx={{ marginTop: 1 }}>
+    <Link to="/" style={linkStyle}>Home</Link>
+    <Link to="/about" style={linkStyle}>About Us</Link>
+    <Link to="/contact" style={linkStyle}>Contact Us</Link>
+  </Box>
+</Grid2>
     </Grid2>
 
     {/* Second Row: Social Media , Subscribe, Map */}
@@ -608,9 +616,9 @@ useEffect(() => {
       <Grid2 item xs={12} md={4} sx={{ textAlign: "left" }}>
         <Typography variant="h6" sx={{ fontWeight: "bold" }}>Follow Us</Typography>
         <Box sx={{ display: "flex", gap: 1, marginTop: 1 }}>
-          <IconButton href="#" sx={{ color: "inherit" }}><Facebook /></IconButton>
-          <IconButton href="#" sx={{ color: "inherit" }}><Twitter /></IconButton>
-          <IconButton href="#" sx={{ color: "inherit" }}><LinkedIn /></IconButton>
+          <IconButton href="https://www.linkedin.com/jobs/search?trk=content-hub-home-page_guest_nav_menu_jobs&position=1&pageNum=0" sx={{ color: "inherit" }}><LinkedIn /></IconButton>
+          <IconButton href="https://www.facebook.com/facebook/" sx={{ color: "inherit" }}><Facebook /></IconButton>
+          <IconButton href="https://x.com/" sx={{ color: "inherit" }}><Twitter /></IconButton>
         </Box>
       </Grid2>
 

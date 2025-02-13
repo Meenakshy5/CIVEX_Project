@@ -21,7 +21,7 @@ import isAuth from "../lib/isAuth";
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100vh",
-    width:"100%",
+    width: "100%",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -40,13 +40,13 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: "0 8px 16px rgba(0,0,0,0.3)",
   },
   inputField: {
-    width: "90%",
-    marginBottom: "15px",
+    width: "350px", // Ensure full width within the card
+    marginBottom: "20px", // Consistent margin bottom
     "& input": {
       color: "#fff",
     },
     "& label": {
-      color: "#bbb",
+      color: "black",
     },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {

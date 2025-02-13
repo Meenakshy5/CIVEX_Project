@@ -17,6 +17,8 @@ import MyJobs from "./component/recruiter/MyJobs";
 import JobApplications from "./component/recruiter/JobApplications";
 import AcceptedApplicants from "./component/recruiter/AcceptedApplicants";
 import RecruiterProfile from "./component/recruiter/Profile";
+import About from "./component/Aboutus";
+import Contact from "./component/Contactus";
 import MessagePopup from "./lib/MessagePopup";
 import isAuth, { userType } from "./lib/isAuth";
 
@@ -79,6 +81,8 @@ function App() {
                 <Route path="/employees" element={<AcceptedApplicants />} />
                 
                 <Route path="/admin-dashboard" element={<AdminDashboard />}/>
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
                 <Route path="*" element={<ErrorPage />} />
               </Routes>
             </Grid2>
