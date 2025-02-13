@@ -1,9 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import {
   Button,
-  Grid2,
+  Grid,
   Typography,
-  Modal,
   Paper,
   TextField,
   MenuItem,
@@ -22,6 +21,7 @@ const PopupDialog = styled('div')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  backgroundColor: '#f5f5f5', // Light background for the dialog
 });
 
 const ChipContainer = styled('div')({
@@ -32,12 +32,53 @@ const ChipContainer = styled('div')({
 });
 
 const ChipStyled = styled(Chip)(({ theme }) => ({
-  backgroundColor: theme.palette.primary.main,
+  backgroundColor: '#355545', // Primary color
   color: 'white',
+  '&:hover': {
+    backgroundColor: '#2a4538', // Darker shade on hover
+  },
 }));
 
 const InputBox = styled(Box)({
   marginBottom: '20px',
+});
+
+const CreateJobsPaper = styled(Paper)({
+  padding: '20px',
+  outline: 'none',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundColor: '#ffffff', // White background for the paper
+  borderRadius: '10px',
+  boxShadow: '0px 4px 10px rgba(53, 85, 69, 0.1)', // Subtle shadow
+  width: '800px', // Increased width of the form
+  maxWidth: '90%', // Ensure it doesn't overflow on smaller screens
+});
+
+const CreateJobsButton = styled(Button)({
+  padding: '10px 50px',
+  marginTop: '30px',
+  backgroundColor: '#355545', // Primary color
+  color: 'white',
+  '&:hover': {
+    backgroundColor: '#2a4538', // Darker shade on hover
+  },
+});
+
+const CreateJobsTextField = styled(TextField)({
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: '#355545', // Primary color for the border
+    },
+    '&:hover fieldset': {
+      borderColor: '#2a4538', // Darker shade on hover
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#355545', // Primary color when focused
+    },
+  },
 });
 
 const CreateJobs = (props) => {
@@ -73,7 +114,6 @@ const CreateJobs = (props) => {
     }
   };
 
-  // Add the handleDeleteSkill function
   const handleDeleteSkill = (index) => {
     const updatedSkills = jobDetails.skillsets.filter((_, i) => i !== index);
     setJobDetails({
@@ -121,40 +161,31 @@ const CreateJobs = (props) => {
 
   return (
     <PopupDialog>
-      <Grid2
+      <Grid
         container
         item
         direction="column"
         alignItems="center"
-        style={{ padding: "30px", minHeight: "93vh", width: "" }}
+        style={{ padding: "30px", minHeight: "93vh" }}
       >
-        <Grid2 item>
-          <Typography variant="h2">Add Job</Typography>
-        </Grid2>
-        <Grid2 item container xs direction="column" justify="center">
-          <Grid2 item>
-            <Paper
-              style={{
-                padding: "20px",
-                outline: "none",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Grid2 container direction="column" alignItems="stretch" spacing={3}>
-                <Grid2 item>
-                  <TextField
+        <Grid item>
+          <Typography variant="h2" style={{ color: '#355545' }}>Add Job</Typography>
+        </Grid>
+        <Grid item container xs direction="column" justify="center">
+          <Grid item>
+            <CreateJobsPaper>
+              <Grid container direction="column" alignItems="stretch" spacing={3}>
+                <Grid item>
+                  <CreateJobsTextField
                     label="Title"
                     value={jobDetails.title}
                     onChange={(event) => handleInput("title", event.target.value)}
                     variant="outlined"
                     fullWidth
                   />
-                </Grid2>
-                <Grid2 item>
-                  <TextField
+                </Grid>
+                <Grid item>
+                  <CreateJobsTextField
                     label="Skills"
                     variant="outlined"
                     fullWidth
@@ -170,9 +201,9 @@ const CreateJobs = (props) => {
                       />
                     ))}
                   </ChipContainer>
-                </Grid2>
-                <Grid2 item>
-                  <TextField
+                </Grid>
+                <Grid item>
+                  <CreateJobsTextField
                     select
                     label="Job Type"
                     variant="outlined"
@@ -183,10 +214,10 @@ const CreateJobs = (props) => {
                     <MenuItem value="Full Time">Full Time</MenuItem>
                     <MenuItem value="Part Time">Part Time</MenuItem>
                     <MenuItem value="Work From Home">Work From Home</MenuItem>
-                  </TextField>
-                </Grid2>
-                <Grid2 item>
-                  <TextField
+                  </CreateJobsTextField>
+                </Grid>
+                <Grid item>
+                  <CreateJobsTextField
                     select
                     label="Duration"
                     variant="outlined"
@@ -201,10 +232,10 @@ const CreateJobs = (props) => {
                     <MenuItem value={4}>4 Months</MenuItem>
                     <MenuItem value={5}>5 Months</MenuItem>
                     <MenuItem value={6}>6 Months</MenuItem>
-                  </TextField>
-                </Grid2>
-                <Grid2 item>
-                  <TextField
+                  </CreateJobsTextField>
+                </Grid>
+                <Grid item>
+                  <CreateJobsTextField
                     label="Salary"
                     type="number"
                     variant="outlined"
@@ -213,9 +244,9 @@ const CreateJobs = (props) => {
                     InputProps={{ inputProps: { min: 0 } }}
                     fullWidth
                   />
-                </Grid2>
-                <Grid2 item>
-                  <TextField
+                </Grid>
+                <Grid item>
+                  <CreateJobsTextField
                     label="Application Deadline"
                     type="datetime-local"
                     value={jobDetails.deadline}
@@ -224,9 +255,9 @@ const CreateJobs = (props) => {
                     variant="outlined"
                     fullWidth
                   />
-                </Grid2>
-                <Grid2 item>
-                  <TextField
+                </Grid>
+                <Grid item>
+                  <CreateJobsTextField
                     label="Maximum Number Of Applicants"
                     type="number"
                     variant="outlined"
@@ -235,9 +266,9 @@ const CreateJobs = (props) => {
                     InputProps={{ inputProps: { min: 1 } }}
                     fullWidth
                   />
-                </Grid2>
-                <Grid2 item>
-                  <TextField
+                </Grid>
+                <Grid item>
+                  <CreateJobsTextField
                     label="Positions Available"
                     type="number"
                     variant="outlined"
@@ -246,20 +277,18 @@ const CreateJobs = (props) => {
                     InputProps={{ inputProps: { min: 1 } }}
                     fullWidth
                   />
-                </Grid2>
-              </Grid2>
-              <Button
+                </Grid>
+              </Grid>
+              <CreateJobsButton
                 variant="contained"
-                color="primary"
-                style={{ padding: "10px 50px", marginTop: "30px" }}
                 onClick={handleUpdate}
               >
                 Create Job
-              </Button>
-            </Paper>
-          </Grid2>
-        </Grid2>
-      </Grid2>
+              </CreateJobsButton>
+            </CreateJobsPaper>
+          </Grid>
+        </Grid>
+      </Grid>
     </PopupDialog>
   );
 };

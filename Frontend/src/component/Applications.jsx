@@ -54,65 +54,52 @@ const ApplicationTile = (props) => {
   const { application } = props;
   const setPopup = useContext(SetPopupContext);
   const [open, setOpen] = useState(false);
-  const [rating, setRating] = useState(application.job.rating);
-
+  const [rating, setRating] = useState(-1);
   const appliedOn = new Date(application.dateOfApplication);
   const joinedOn = new Date(application.dateOfJoining);
 
-  const fetchRating = () => {
-    axios
-      .get(`${apiList.rating}?id=${application.job._id}`, {
+  const fetchRating = async () => {
+    try {
+      const response = await axios.get(`${apiList.rating}?id=${application.job._id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      })
-      .then((response) => {
-        setRating(response.data.rating);
-        console.log(response.data);
-      })
-      .catch((err) => {
-        // console.log(err.response);
-        console.log(err.response.data);
-        setPopup({
-          open: true,
-          severity: "error",
-          message: "Error",
-        });
       });
+      setRating(response.data.rating);
+    } catch (err) {
+      console.error("Error fetching rating:", err);
+      setPopup({
+        open: true,
+        severity: "error",
+        message: "Failed to fetch rating.",
+      });
+    }
   };
 
-  const changeRating = () => {
-    axios
-      .put(
-        apiList.rating,
-        { rating: rating, jobId: application.job._id },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      )
-      .then((response) => {
-        console.log(response.data);
-        setPopup({
-          open: true,
-          severity: "success",
-          message: "Rating updated successfully",
-        });
-        fetchRating();
-        setOpen(false);
-      })
-      .catch((err) => {
-        // console.log(err.response);
-        console.log(err);
-        setPopup({
-          open: true,
-          severity: "error",
-          message: err.response.data.message,
-        });
-        fetchRating();
-        setOpen(false);
+  const changeRating = async () => {
+    const payload = { rating: rating, jobId: application.job._id };
+    console.log("Sending payload:", payload);
+
+    try {
+      const response = await axios.put(apiList.rating, payload, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
+      setPopup({
+        open: true,
+        severity: "success",
+        message: "Rating updated successfully.",
+      });
+      fetchRating();
+    } catch (err) {
+      console.error("Error updating rating:", err);
+      setPopup({
+        open: true,
+        severity: "error",
+        message: err.response?.data?.message || "Failed to update rating.",
+      });
+    }
   };
 
   const handleClose = () => {

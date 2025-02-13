@@ -72,79 +72,6 @@ const FilterPopup = (props) => {
         }}
       >
         <Grid container direction="column" alignItems="center" spacing={3}>
-          {/* <Grid container item alignItems="center">
-            <Grid item xs={3}>
-              Application Status
-            </Grid>
-            <Grid
-              container
-              item
-              xs={9}
-              justify="space-around"
-              // alignItems="center"
-            >
-              <Grid item>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      name="rejected"
-                      checked={searchOptions.status.rejected}
-                      onChange={(event) => {
-                        setSearchOptions({
-                          ...searchOptions,
-                          status: {
-                            ...searchOptions.status,
-                            [event.target.name]: event.target.checked,
-                          },
-                        });
-                      }}
-                    />
-                  }
-                  label="Rejected"
-                />
-              </Grid>
-              <Grid item>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      name="applied"
-                      checked={searchOptions.status.applied}
-                      onChange={(event) => {
-                        setSearchOptions({
-                          ...searchOptions,
-                          status: {
-                            ...searchOptions.status,
-                            [event.target.name]: event.target.checked,
-                          },
-                        });
-                      }}
-                    />
-                  }
-                  label="Applied"
-                />
-              </Grid>
-              <Grid item>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      name="shortlisted"
-                      checked={searchOptions.status.shortlisted}
-                      onChange={(event) => {
-                        setSearchOptions({
-                          ...searchOptions,
-                          status: {
-                            ...searchOptions.status,
-                            [event.target.name]: event.target.checked,
-                          },
-                        });
-                      }}
-                    />
-                  }
-                  label="Shortlisted"
-                />
-              </Grid>
-            </Grid>
-          </Grid> */}
           <Grid container item alignItems="center">
             <Grid item xs={3}>
               Sort
@@ -400,46 +327,33 @@ const ApplicationTile = (props) => {
   const setPopup = useContext(SetPopupContext);
   const [open, setOpen] = useState(false);
   const [openEndJob, setOpenEndJob] = useState(false);
-  const [rating, setRating] = useState(application.jobApplicant.rating);
-
+  const [rating, setRating] = useState(-1);
   const appliedOn = new Date(application.dateOfApplication);
 
-  const changeRating = () => {
-    axios
-      .put(
-        apiList.rating,
-        { rating: rating, applicantId: application.jobApplicant.userId },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      )
-      .then((response) => {
-        console.log(response.data);
-        setPopup({
-          open: true,
-          severity: "success",
-          message: "Rating updated successfully",
-        });
-        // fetchRating();
-        getData();
-        setOpen(false);
-      })
-      .catch((err) => {
-        // console.log(err.response);
-        console.log(err);
-        setPopup({
-          open: true,
-          severity: "error",
-          message: err.response.data.message,
-        });
-        // fetchRating();
-        getData();
-        setOpen(false);
-      });
-  };
+  const changeRating = async () => {
+    const payload = { rating: rating, applicantId: application.jobApplicant.userId };
+    console.log("Sending payload:", payload);
 
+    try {
+      const response = await axios.put(apiList.rating, payload, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setPopup({
+        open: true,
+        severity: "success",
+        message: "Rating updated successfully.",
+      });
+    } catch (err) {
+      console.error("Error updating rating:", err);
+      setPopup({
+        open: true,
+        severity: "error",
+        message: err.response?.data?.message || "Failed to update rating.",
+      });
+    }
+  };
   const handleClose = () => {
     setOpen(false);
   };
@@ -534,6 +448,7 @@ const ApplicationTile = (props) => {
         >
          <Avatar
   src={application.jobApplicant.profile} // Directly use the Cloudinary URL
+  style={{ width: "150px", height: "150px" }}
   className={classes.avatar}
 />
         </Grid>

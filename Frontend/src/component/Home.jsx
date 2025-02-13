@@ -593,7 +593,7 @@ const Home = (props) => {
       >
         <Grid item container direction="column" alignItems="center" spacing={3}>
           <Grid item xs={12}>
-            <Typography variant="h2">Jobs</Typography>
+            <Typography variant="h2"style={{ color: "#355545" }}>Jobs</Typography>
           </Grid>
           <Grid item xs={12}>
             <TextField

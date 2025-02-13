@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import {
-  Button,Chip,Grid,IconButton, InputAdornment, Paper,TextField, Typography, Modal,Slider,FormControlLabel, FormGroup,MenuItem,Checkbox,Avatar,Rating, 
+  Button,Chip,Grid,IconButton, InputAdornment, Paper,TextField,  Dialog,DialogTitle,DialogContent, DialogActions, Typography, Modal,Slider,FormControlLabel, FormGroup,MenuItem,Checkbox,Avatar,Rating, 
 } from "@mui/material"; // Removed the extra space
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -284,11 +284,28 @@ const ApplicationTile = (props) => {
   const { application, getData } = props;
   const setPopup = useContext(SetPopupContext);
   const [open, setOpen] = useState(false);
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false); // State for the reject confirmation dialog
 
   const appliedOn = new Date(application.dateOfApplication);
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  // Function to handle the Reject button click
+  const handleRejectClick = () => {
+    setRejectDialogOpen(true); // Open the confirmation dialog
+  };
+
+  // Function to confirm the rejection
+  const handleConfirmReject = () => {
+    updateStatus("rejected"); // Update the status to "rejected"
+    setRejectDialogOpen(false); // Close the dialog
+  };
+
+  // Function to close the reject confirmation dialog
+  const handleCloseRejectDialog = () => {
+    setRejectDialogOpen(false);
   };
 
   const colorSet = {
@@ -379,11 +396,8 @@ const ApplicationTile = (props) => {
         <Grid item xs>
           <Button
             className={classes.statusBlock}
-            style={{
-              background: colorSet["rejected"],
-              color: "#ffffff",
-            }}
-            onClick={() => updateStatus("rejected")}
+            style={{ background: colorSet["rejected"], color: "#ffffff" }}
+            onClick={handleRejectClick} // Trigger the confirmation dialog
           >
             Reject
           </Button>
@@ -411,7 +425,7 @@ const ApplicationTile = (props) => {
               background: colorSet["rejected"],
               color: "#ffffff",
             }}
-            onClick={() => updateStatus("rejected")}
+            onClick={handleRejectClick} // Trigger the confirmation dialog
           >
             Reject
           </Button>
@@ -492,10 +506,10 @@ const ApplicationTile = (props) => {
             alignItems: "center",
           }}
         >
-<Avatar
-  src={application.jobApplicant.profile} // Directly use the Cloudinary URL
-  className={classes.avatar}
-/>
+          <Avatar
+            src={application.jobApplicant.profile} // Directly use the Cloudinary URL
+            className={classes.avatar}
+          />
         </Grid>
         <Grid container item xs={7} spacing={1} direction="column">
           <Grid item>
@@ -549,28 +563,27 @@ const ApplicationTile = (props) => {
           </Grid>
         </Grid>
       </Grid>
-      <Modal open={open} onClose={handleClose} className={classes.popupDialog}>
-        <Paper
-          style={{
-            padding: "20px",
-            outline: "none",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            minWidth: "30%",
-            alignItems: "center",
-          }}
-        >
-          <Button
-            variant="contained"
-            color="primary"
-            style={{ padding: "10px 50px" }}
-            // onClick={() => changeRating()}
-          >
-            Submit
+
+      {/* Reject Confirmation Dialog */}
+      <Dialog open={rejectDialogOpen} onClose={handleCloseRejectDialog}>
+        <DialogTitle style={{ fontWeight: "bold", color: "#d32f2f" }}>
+          Confirm Rejection
+        </DialogTitle>
+        <DialogContent style={{ padding: "20px", fontSize: "16px" }}>
+          Are you sure you want to reject this application? This action cannot be undone.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseRejectDialog} style={{ color: "#555" }}>
+            Cancel
           </Button>
-        </Paper>
-      </Modal>
+          <Button
+            onClick={handleConfirmReject}
+            style={{ background: "#d32f2f", color: "#fff" }}
+          >
+            Reject
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 };
