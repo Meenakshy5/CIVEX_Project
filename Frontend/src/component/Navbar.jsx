@@ -31,7 +31,7 @@ const Navbar = () => {
       }}
     >
       {/* Left Side - Logo */}
-      <div style={{ fontSize: "20px" }}>CIVEX</div>
+      <HoverButton text="CIVEX" onClick={() => handleClick("/")} style={{ fontSize: "20px" }} />
 
       {/* Center - Navigation Links */}
       <div style={{ display: "flex", gap: "20px"}}>
@@ -54,6 +54,12 @@ const Navbar = () => {
             )}
           </>
         )}
+        {!isAuth() && (
+          <>
+            <HoverButton text="About Us" onClick={() => handleClick("/about")} />
+            <HoverButton text="Contact Us" onClick={() => handleClick("/contact")} />
+          </>
+        )}
       </div>
 
       {/* Right Side - Login / Logout Buttons */}
@@ -72,7 +78,7 @@ const Navbar = () => {
 };
 
 // Reusable Component with Hover Effect
-const HoverButton = ({ text, onClick, isButton = false, isRed = false }) => {
+const HoverButton = ({ text, onClick, isButton = false, isRed = false, style }) => {
   const [hover, setHover] = useState(false);
 
   return (
@@ -90,6 +96,7 @@ const HoverButton = ({ text, onClick, isButton = false, isRed = false }) => {
         borderRadius: isButton ? "5px" : "0",
         transition: "all 0.3s ease",
         marginLeft: isButton ? "5px" : "0", // Shifted buttons slightly left
+        ...style, // Spread the style prop to allow custom styles
       }}
     >
       {text}

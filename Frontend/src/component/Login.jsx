@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    backgroundImage: "url('https://images.pexels.com/photos/6594387/pexels-photo-6594387.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')",
+    backgroundImage: "url('https://images.pexels.com/photos/434337/pexels-photo-434337.jpeg')",
     backgroundSize: "cover",
     backgroundPosition: "center",
   },
