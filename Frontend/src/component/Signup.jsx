@@ -258,11 +258,11 @@ const Signup = () => {
 
       {formData.type === 'applicant' && (
         <>
-          <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>Education</Typography>
+          <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>Experience</Typography>
           {formData.education.map((edu, index) => (
             <Box key={index} sx={{ mb: 2, p: 2, border: '1px solid #ddd', borderRadius: 1 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="subtitle1">Education #{index + 1}</Typography>
+                <Typography variant="subtitle1">Regiment #{index + 1}</Typography>
                 {formData.education.length > 1 && (
                   <IconButton onClick={() => removeEducation(index)} size="small">
                     <Minus className="h-4 w-4" />
@@ -273,7 +273,7 @@ const Signup = () => {
               <TextField
                 fullWidth
                 margin="normal"
-                label="Institution Name"
+                label="Regiment Name"
                 value={edu.institutionName}
                 onChange={(e) => handleEducationChange(index, 'institutionName', e.target.value)}
                 required
@@ -308,7 +308,7 @@ const Signup = () => {
             fullWidth
             sx={{ mb: 2 }}
           >
-            Add Education
+            Add Experience
           </Button>
 
           <TextField

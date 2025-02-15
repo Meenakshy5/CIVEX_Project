@@ -181,7 +181,7 @@ const JobTile = (props) => {
           }}
         >
           <TextField
-            label="Write SOP (up to 250 words)"
+            label="Write the Statement Of Purpose (SOP) (up to 250 words)"
             multiline
             rows={8}
             style={{ width: "100%", marginBottom: "30px" }}

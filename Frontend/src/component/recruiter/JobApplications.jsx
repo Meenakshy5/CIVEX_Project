@@ -529,7 +529,7 @@ const ApplicationTile = (props) => {
           </Grid>
           <Grid item>Applied On: {appliedOn.toLocaleDateString()}</Grid>
           <Grid item>
-            Education:{" "}
+            Experience:{" "}
             {application.jobApplicant.education
               .map((edu) => {
                 return `${edu.institutionName} (${edu.startYear}-${

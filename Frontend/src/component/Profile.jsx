@@ -3,11 +3,10 @@ import {
   Button,
   Grid,
   Typography,
-  Modal,
   Paper,
   TextField,
+  Avatar,
 } from "@mui/material";
-import { Chip, InputAdornment } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import axios from "axios";
 import FileUploadInput from "../lib/FileUploadInput";
@@ -27,6 +26,11 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
   },
+  avatar: {
+    width: theme.spacing(15),
+    height: theme.spacing(15),
+    marginBottom: theme.spacing(2),
+  },
 }));
 
 const MultifieldInput = (props) => {
@@ -39,7 +43,7 @@ const MultifieldInput = (props) => {
         <Grid item container className={classes.inputBox} key={key}>
           <Grid item xs={6}>
             <TextField
-              label={`Institution Name #${key + 1}`}
+              label={`Regiment Name #${key + 1}`}
               value={education[key].institutionName}
               onChange={(event) => {
                 const newEdu = [...education];
@@ -94,7 +98,7 @@ const MultifieldInput = (props) => {
           }
           className={classes.inputBox}
         >
-          Add another institution details
+          Add another Regiment details
         </Button>
       </Grid>
     </>
@@ -233,6 +237,14 @@ const Profile = (props) => {
               alignItems: "center",
             }}
           >
+            {/* Profile Photo */}
+            {profileDetails.profile && (
+              <Avatar
+                alt="Profile Photo"
+                src={profileDetails.profile}
+                className={classes.avatar}
+              />
+            )}
             <Grid container direction="column" alignItems="stretch" spacing={3}>
               <Grid item>
                 <TextField
